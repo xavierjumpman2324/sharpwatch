@@ -162,6 +162,31 @@ body{
 .loader{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px;gap:10px;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.5px;}
 .spinner{width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .7s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── LINKS ───────────────────────────────────────────────────────────────── */
+a.row-link{color:inherit;text-decoration:none;display:contents;}
+.ext-link{font-size:9px;color:var(--muted);text-decoration:none;border-bottom:1px solid var(--border);padding-bottom:1px;letter-spacing:.3px;white-space:nowrap;transition:color .1s;}
+.ext-link:hover{color:var(--green);border-bottom-color:var(--green);}
+.book-link{color:var(--muted);text-decoration:none;text-transform:capitalize;font-size:11px;transition:color .1s;}
+.book-link:hover{color:var(--cyan);}
+
+/* ── MOBILE ──────────────────────────────────────────────────────────────── */
+@media(max-width:768px){
+  .topnav{height:auto;flex-wrap:wrap;}
+  .nav-logo{padding:0 12px;height:40px;}
+  .tabs{overflow-x:auto;scrollbar-width:none;width:100%;border-top:1px solid var(--border);}
+  .tabs::-webkit-scrollbar{display:none;}
+  .tab{padding:0 10px;font-size:9px;height:36px;flex-shrink:0;}
+  .nav-status{display:none;}
+  .content{padding:12px 10px;}
+  .pm-grid{grid-template-columns:1fr;}
+  .data-table{font-size:11px;}
+  .data-table th,.data-table td{padding:7px 10px;}
+  .t-wrap{overflow-x:auto;}
+  .cross-card{grid-template-columns:1fr;gap:8px;}
+  .arb-card .arb-leg{min-width:120px;}
+  .ph h2{font-size:10px;}
+}
 </style>
 </head>
 <body>
@@ -250,6 +275,26 @@ const CAT_META = {
   'Other':        {color:'#7da87d'},
 };
 
+const BOOK_URLS={
+  'draftkings':    'https://sportsbook.draftkings.com',
+  'fanduel':       'https://www.fanduel.com/sports',
+  'betmgm':        'https://sports.betmgm.com',
+  'caesars':       'https://www.caesars.com/sportsbook-and-casino',
+  'pointsbetus':   'https://www.pointsbet.com',
+  'bet365':        'https://www.bet365.com',
+  'pinnacle':      'https://www.pinnacle.com',
+  'bovada':        'https://www.bovada.lv',
+  'mybookieag':    'https://mybookie.ag',
+  'williamhill_us':'https://www.williamhill.com/us',
+};
+function bookLink(book){
+  const url=BOOK_URLS[book];
+  const name=book.replace(/_/g,' ');
+  return url
+    ? `<a href="${url}" target="_blank" rel="noopener" class="book-link">${name} ↗</a>`
+    : `<span class="book-name">${name}</span>`;
+}
+
 let currentPage='best-odds', pmCat='All', kalCat='All';
 let countdownVal=120, refreshInterval=120;
 let data={pm:null,kalshi:null,odds:null,ev:null,arb:null,cross:null};
@@ -312,7 +357,7 @@ function renderBestOdds(d){
         return `<tr>
           <td style="color:var(--bright);font-weight:600">${team}</td>
           <td><span class="odds-chip odds-best">${fmtOdds(bo.american||0)}</span></td>
-          <td><span class="book-name">${(bo.book||'').replace(/_/g,' ')}</span></td>
+          <td>${bookLink(bo.book||'')}</td>
           <td style="color:var(--text)">${fp?fp+'%':'—'}</td>
           <td style="color:var(--muted);font-size:11px">${fmtTime(g.commence)}</td>
         </tr>`;
@@ -346,7 +391,7 @@ function renderEV(d){
   </tr></thead><tbody>${d.bets.map(b=>`<tr>
     <td style="max-width:200px;color:var(--text)">${b.game}</td>
     <td style="color:var(--bright);font-weight:600">${b.outcome}</td>
-    <td class="book-name">${b.book.replace(/_/g,' ')}</td>
+    <td>${bookLink(b.book)}</td>
     <td><span class="odds-chip">${fmtOdds(b.odds)}</span></td>
     <td style="color:var(--muted)">${b.fair_prob}%</td>
     <td>${evChip(b.ev_pct)}</td>
@@ -376,7 +421,7 @@ function renderArb(d){
         ${a.legs.map(l=>`<div class="arb-leg">
           <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">BET: ${l.outcome}</div>
           <div style="font-size:18px;font-weight:800;color:var(--green)">${fmtOdds(l.odds)}</div>
-          <div class="book-name" style="margin-top:3px">${l.book.replace(/_/g,' ')}</div>
+          <div style="margin-top:3px">${bookLink(l.book)}</div>
         </div>`).join('')}
       </div>
       <div style="margin-top:10px;font-size:10px;color:var(--muted)">
@@ -428,7 +473,7 @@ function renderPolymarket(d){
         <span class="pc-money">${fmtMoneyFull(m.total_value)}</span>
       </div>
       <hr class="pc-rule">
-      <div class="pc-title">${m.title}</div>
+      <div class="pc-title">${m.url?`<a href="${m.url}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;">${m.title} <span style="font-size:9px;color:var(--muted)">↗</span></a>`:m.title}</div>
       <div class="pc-bottom">
         <div>
           <div class="pc-count" style="color:${c};text-shadow:0 0 10px ${c}44">${m.trader_count}<span class="pc-of">/${n}</span></div>
@@ -472,7 +517,9 @@ function renderKalshi(d){
       const no =m.no_price !=null?Math.round(m.no_price *100):null;
       const c=(CAT_META[m.category]||{}).color||'#7da87d';
       return `<tr>
-        <td style="font-weight:500;max-width:300px;color:var(--bright)">${m.title}</td>
+        <td style="font-weight:500;max-width:300px;color:var(--bright)">
+          ${m.ticker?`<a href="https://kalshi.com/markets/${m.ticker}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">${m.title} <span style="font-size:9px;color:var(--muted)">↗</span></a>`:m.title}
+        </td>
         <td style="font-size:10px;font-weight:700;color:${c};text-transform:uppercase;letter-spacing:.3px">${m.category}</td>
         <td><span class="k-prob ${yes!=null?kClass(yes):''}">${yes!=null?yes+'¢':'—'}</span></td>
         <td style="color:var(--muted)">${no!=null?no+'¢':'—'}</td>

@@ -88,8 +88,10 @@ def find_cross_market_edges(odds_data: dict, kalshi: list[dict], polymarket: lis
                     continue
                 pm_prob  = round(yes_price * 100, 1)
                 diff     = round(pm_prob - sb_prob, 1)
-                if abs(diff) < 5:
-                    continue  # not interesting enough
+                if abs(diff) < 8:
+                    continue
+                if abs(diff) > 50:
+                    continue  # almost certainly a mismatch
                 edges.append({
                     "source":       "Kalshi",
                     "pm_title":     title,
@@ -131,8 +133,10 @@ def find_cross_market_edges(odds_data: dict, kalshi: list[dict], polymarket: lis
                 if sb_prob is None:
                     continue
                 diff = round(pm_prob - sb_prob, 1)
-                if abs(diff) < 8:
+                if abs(diff) < 10:
                     continue
+                if abs(diff) > 50:
+                    continue  # almost certainly a mismatch
                 edges.append({
                     "source":       "Polymarket",
                     "pm_title":     title,

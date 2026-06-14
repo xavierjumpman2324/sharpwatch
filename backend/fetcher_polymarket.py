@@ -130,12 +130,14 @@ async def run_fetch(limit: int = 200, min_value: float = 100.0, top_n: int = 200
 
     market_holders: dict[str, list[dict]] = defaultdict(list)
     market_label:   dict[str, str]        = {}
+    market_slug:    dict[str, str]        = {}
 
     for trader, positions in results:
         seen = set()
         for p in positions:
             key = p["slug"] or p["market"]
             market_label[key] = p["market"]
+            market_slug[key]  = p["slug"]
             if key in seen:
                 continue
             seen.add(key)
@@ -155,6 +157,8 @@ async def run_fetch(limit: int = 200, min_value: float = 100.0, top_n: int = 200
     markets = []
     for key, holders in ranked[:top_n]:
         title = market_label[key]
+        slug  = market_slug.get(key, "")
+        url   = f"https://polymarket.com/event/{slug}" if slug and not slug.startswith("0x") and len(slug) < 200 else None
         cat   = categorize(title)
         sides:       dict[str, int]   = defaultdict(int)
         side_values: dict[str, float] = defaultdict(float)
@@ -172,6 +176,7 @@ async def run_fetch(limit: int = 200, min_value: float = 100.0, top_n: int = 200
             "sides":         dict(sorted(sides.items(), key=lambda x: -x[1])),
             "side_values":   {k: round(v, 2) for k, v in sorted(side_values.items(), key=lambda x: -x[1])},
             "unanimous":     len(sides) == 1,
+            "url":           url,
         })
 
     log.info("Done. %d markets found.", len(markets))
