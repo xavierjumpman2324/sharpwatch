@@ -21,8 +21,9 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(levelname)s %(message)s")
 log = logging.getLogger("sharpwatch")
 
-ODDS_API_KEY    = os.getenv("ODDS_API_KEY", "")
-FETCH_INTERVAL  = int(os.getenv("FETCH_INTERVAL", "120"))
+ODDS_API_KEY        = os.getenv("ODDS_API_KEY", "")
+FETCH_INTERVAL      = int(os.getenv("FETCH_INTERVAL", "120"))
+ODDS_FETCH_INTERVAL = int(os.getenv("ODDS_FETCH_INTERVAL", "21600"))  # 6 hours = ~120 req/month
 CACHE_DIR       = Path(__file__).parent / "cache"
 CACHE_DIR.mkdir(exist_ok=True)
 
@@ -107,32 +108,31 @@ async def refresh_cross():
         log.error("Cross-market analysis failed: %s", e)
 
 
-async def full_refresh():
-    await asyncio.gather(
-        refresh_polymarket(),
-        refresh_kalshi(),
-        refresh_odds(),
-    )
+async def fast_refresh():
+    """Runs every FETCH_INTERVAL (2 min) — Polymarket + Kalshi only."""
+    await asyncio.gather(refresh_polymarket(), refresh_kalshi())
+    await refresh_cross()
+
+
+async def odds_refresh():
+    """Runs every ODDS_FETCH_INTERVAL (6 hrs) — sportsbook odds only."""
+    await refresh_odds()
     await refresh_cross()
 
 
 @app.on_event("startup")
 async def startup():
-    # Load from disk cache
     for name in ("polymarket", "kalshi", "odds"):
         cached = _read(name)
         if cached:
-            key = name if name != "odds" else "odds"
-            _store[key if key != "kalshi" else "kalshi"] = cached
-            if name == "kalshi":
-                _store["kalshi"] = cached
-            else:
-                _store[name] = cached
+            _store[name] = cached
             log.info("Loaded %s from disk cache", name)
 
     scheduler = AsyncIOScheduler()
-    scheduler.add_job(full_refresh,           "interval", seconds=FETCH_INTERVAL,
-                      id="full", next_run_time=datetime.now())
+    scheduler.add_job(fast_refresh, "interval", seconds=FETCH_INTERVAL,
+                      id="fast", next_run_time=datetime.now())
+    scheduler.add_job(odds_refresh, "interval", seconds=ODDS_FETCH_INTERVAL,
+                      id="odds", next_run_time=datetime.now())
     scheduler.start()
     app.state.scheduler = scheduler
 

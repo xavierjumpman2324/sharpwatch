@@ -3,282 +3,115 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SharpWatch — Track Smart Money on Prediction Markets</title>
+<title>SHARPWATCH // Market Intelligence Terminal</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#050905;--s1:#080e08;--s2:#0c140c;
+  --border:#172317;--border2:#1e301e;
+  --text:#7da87d;--bright:#b8d8b8;
+  --green:#00e676;--amber:#ffc107;--red:#ff5252;--cyan:#00e5ff;
+  --muted:#3a563a;
+}
+body{
+  background-color:var(--bg);
+  background-image:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,230,118,.007) 3px,rgba(0,230,118,.007) 4px);
+  color:var(--text);font-family:'JetBrains Mono',monospace;font-size:13px;
+  min-height:100vh;display:flex;flex-direction:column;
+}
 
-  :root {
-    --bg: #070b14;
-    --surface: #0f172a;
-    --border: #1e293b;
-    --text: #e2e8f0;
-    --muted: #64748b;
-    --blue: #58a6ff;
-    --green: #4ade80;
-    --amber: #f59e0b;
-    --purple: #a78bfa;
-  }
+/* ── NAV ── */
+nav{
+  display:flex;align-items:center;height:44px;
+  border-bottom:1px solid var(--border);background:var(--s1);
+  padding:0 24px;gap:16px;
+}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;padding-right:16px;border-right:1px solid var(--border);}
+.logo-box{width:24px;height:24px;border:1px solid var(--green);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:var(--green);box-shadow:0 0 8px rgba(0,230,118,.2);}
+.logo-name{font-size:12px;font-weight:700;color:var(--bright);letter-spacing:.5px;}
+.nav-links{display:flex;align-items:center;gap:0;flex:1;}
+.nav-links a{color:var(--muted);font-size:10px;font-weight:700;text-decoration:none;padding:0 14px;height:44px;display:flex;align-items:center;letter-spacing:.5px;text-transform:uppercase;border-right:1px solid var(--border);transition:color .1s;}
+.nav-links a:hover{color:var(--bright);}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:12px;}
+.live-pill{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--green);letter-spacing:.5px;}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:blink 1s infinite;}
+@keyframes blink{0%,100%{opacity:1;box-shadow:0 0 6px var(--green)}50%{opacity:.4;box-shadow:none}}
+.cta-btn{background:transparent;border:1px solid var(--green);color:var(--green);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;padding:6px 16px;letter-spacing:.5px;text-transform:uppercase;text-decoration:none;cursor:pointer;transition:all .1s;box-shadow:0 0 8px rgba(0,230,118,.1);}
+.cta-btn:hover{background:rgba(0,230,118,.08);box-shadow:0 0 16px rgba(0,230,118,.25);}
 
-  body {
-    background: var(--bg);
-    background-image:
-      radial-gradient(ellipse at 10% 20%, #0d1f3c 0%, transparent 50%),
-      radial-gradient(ellipse at 90% 80%, #1a0a2e 0%, transparent 50%);
-    color: var(--text);
-    font-family: 'Inter', sans-serif;
-    line-height: 1.6;
-    min-height: 100vh;
-  }
+/* ── HERO ── */
+.hero{padding:48px 24px 32px;max-width:1200px;margin:0 auto;width:100%;}
+.hero-top{margin-bottom:36px;}
+.hero-eyebrow{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;}
+h1{font-size:clamp(32px,5vw,54px);font-weight:800;line-height:1.05;letter-spacing:-1px;color:var(--bright);margin-bottom:14px;}
+h1 .accent{color:var(--green);text-shadow:0 0 20px rgba(0,230,118,.35);}
+.hero-desc{font-size:12px;color:var(--text);line-height:1.8;max-width:580px;}
 
-  /* NAV */
-  nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 40px;
-    border-bottom: 1px solid var(--border);
-    position: sticky;
-    top: 0;
-    background: rgba(7,11,20,0.85);
-    backdrop-filter: blur(12px);
-    z-index: 100;
-  }
-  .nav-logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 18px;
-    font-weight: 800;
-    color: #fff;
-    text-decoration: none;
-  }
-  .logo-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--blue), var(--purple));
-    box-shadow: 0 0 12px #58a6ff88;
-  }
-  .nav-links { display: flex; align-items: center; gap: 24px; }
-  .nav-links a { color: var(--muted); font-size: 14px; font-weight: 500; text-decoration: none; transition: color .2s; }
-  .nav-links a:hover { color: var(--text); }
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 9px 20px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    text-decoration: none;
-    transition: all .2s;
-    cursor: pointer;
-    border: none;
-  }
-  .btn-primary {
-    background: linear-gradient(135deg, var(--blue), var(--purple));
-    color: #fff;
-    box-shadow: 0 4px 20px #58a6ff30;
-  }
-  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 28px #58a6ff45; }
-  .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
-  .btn-outline:hover { border-color: var(--blue); color: var(--blue); }
+/* ── DATA SPLIT ── */
+.data-split{
+  display:grid;grid-template-columns:1fr 1fr;gap:1px;
+  background:var(--border);border:1px solid var(--border);
+  flex:1;
+}
+.data-panel{background:var(--s1);display:flex;flex-direction:column;}
+.panel-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:9px 14px;border-bottom:1px solid var(--border);
+  background:var(--s2);flex-shrink:0;
+}
+.panel-title{font-size:10px;font-weight:700;color:var(--bright);text-transform:uppercase;letter-spacing:.8px;}
+.panel-sub{font-size:9px;color:var(--muted);letter-spacing:.3px;}
+.panel-body{flex:1;overflow:hidden;}
 
-  /* HERO */
-  .hero {
-    text-align: center;
-    padding: 100px 24px 80px;
-    max-width: 800px;
-    margin: 0 auto;
-  }
-  .hero-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: #58a6ff12;
-    border: 1px solid #58a6ff30;
-    color: var(--blue);
-    font-size: 12px;
-    font-weight: 700;
-    padding: 5px 14px;
-    border-radius: 20px;
-    letter-spacing: .4px;
-    text-transform: uppercase;
-    margin-bottom: 28px;
-  }
-  .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 1.2s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
-  h1 {
-    font-size: clamp(36px, 6vw, 64px);
-    font-weight: 900;
-    line-height: 1.1;
-    letter-spacing: -2px;
-    margin-bottom: 20px;
-    background: linear-gradient(135deg, #fff 40%, #94a3b8);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  .hero p {
-    font-size: 18px;
-    color: var(--muted);
-    max-width: 560px;
-    margin: 0 auto 40px;
-    line-height: 1.7;
-  }
-  .hero-cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-  .hero-cta .btn { font-size: 15px; padding: 12px 28px; }
+/* PM rows */
+.pm-row{
+  display:grid;grid-template-columns:32px 1fr 56px 70px;gap:0;
+  padding:9px 14px;border-bottom:1px solid var(--border);align-items:center;
+  transition:background .1s;cursor:default;
+}
+.pm-row:last-child{border-bottom:none;}
+.pm-row:hover{background:rgba(0,230,118,.03);}
+.pr-num{font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.3px;}
+.pr-title{font-size:11px;color:var(--bright);font-weight:600;line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.pr-meta{font-size:9px;color:var(--muted);margin-top:1px;}
+.pr-count{text-align:right;font-size:16px;font-weight:800;letter-spacing:-0.5px;}
+.pr-pct{font-size:9px;color:var(--muted);text-align:right;margin-top:1px;}
+.pr-side{text-align:right;font-size:10px;font-weight:700;}
 
-  /* STATS BAR */
-  .stats-bar {
-    display: flex;
-    justify-content: center;
-    gap: 0;
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-    margin: 0 0 80px;
-  }
-  .stat {
-    flex: 1;
-    max-width: 220px;
-    text-align: center;
-    padding: 28px 20px;
-    border-right: 1px solid var(--border);
-  }
-  .stat:last-child { border-right: none; }
-  .stat-number { font-size: 32px; font-weight: 800; color: #fff; letter-spacing: -1px; }
-  .stat-label { font-size: 12px; color: var(--muted); font-weight: 500; margin-top: 4px; text-transform: uppercase; letter-spacing: .4px; }
+/* EV / odds rows */
+.ev-row{
+  display:grid;grid-template-columns:1fr auto auto auto;gap:8px;
+  padding:9px 14px;border-bottom:1px solid var(--border);align-items:center;
+}
+.ev-row:last-child{border-bottom:none;}
+.ev-row:hover{background:rgba(0,230,118,.03);}
+.er-game{font-size:11px;color:var(--bright);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.er-meta{font-size:9px;color:var(--muted);margin-top:1px;}
+.er-book{font-size:9px;color:var(--muted);text-transform:capitalize;text-align:right;}
+.er-odds{font-size:12px;font-weight:700;color:var(--text);text-align:right;}
+.er-ev{font-size:11px;font-weight:800;text-align:right;}
 
-  /* LIVE PREVIEW */
-  .section { max-width: 1100px; margin: 0 auto; padding: 0 24px 80px; }
-  .section-label {
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--blue);
-    letter-spacing: .8px;
-    text-transform: uppercase;
-    margin-bottom: 12px;
-  }
-  .section h2 {
-    font-size: 36px;
-    font-weight: 800;
-    letter-spacing: -1px;
-    margin-bottom: 12px;
-    color: #fff;
-  }
-  .section > p {
-    font-size: 16px;
-    color: var(--muted);
-    margin-bottom: 40px;
-    max-width: 520px;
-  }
+.chip-g{color:var(--green);}.chip-a{color:var(--amber);}
 
-  /* Preview cards */
-  .preview-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 16px;
-    margin-bottom: 24px;
-  }
-  .preview-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 20px;
-    position: relative;
-    overflow: hidden;
-    transition: transform .2s;
-  }
-  .preview-card::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba(255,255,255,.03) 0%, transparent 60%);
-  }
-  .preview-card:hover { transform: translateY(-2px); }
-  .pc-top { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
-  .pc-rank { font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: .5px; }
-  .pc-cat { font-size: 11px; font-weight: 700; flex: 1; }
-  .pc-money { font-size: 13px; font-weight: 700; color: var(--green); }
-  .pc-divider { height: 1px; margin-bottom: 12px; opacity: .5; }
-  .pc-title { font-size: 14px; font-weight: 600; color: var(--text); line-height: 1.4; margin-bottom: 16px; min-height: 40px; }
-  .pc-bottom { display: flex; justify-content: space-between; align-items: flex-end; }
-  .pc-count { font-size: 28px; font-weight: 800; line-height: 1; }
-  .pc-of { font-size: 15px; color: #334155; font-weight: 400; }
-  .pc-label { font-size: 10px; color: var(--muted); margin: 3px 0 8px; text-transform: uppercase; letter-spacing: .4px; font-weight: 600; }
-  .pc-bar-wrap { background: #1e293b; border-radius: 4px; height: 4px; width: 90px; }
-  .pc-bar { border-radius: 4px; height: 4px; }
-  .pc-pills { display: flex; flex-wrap: wrap; gap: 5px; justify-content: flex-end; }
-  .pc-pill { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 20px; white-space: nowrap; }
+/* Panel loading */
+.panel-loader{display:flex;align-items:center;justify-content:center;padding:40px;gap:8px;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.5px;}
+.spinner{width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-  /* FEATURES */
-  .features-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
-  }
-  .feature-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 28px;
-    transition: border-color .2s;
-  }
-  .feature-card:hover { border-color: #2d3f5a; }
-  .feature-icon { font-size: 28px; margin-bottom: 14px; }
-  .feature-card h3 { font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 8px; }
-  .feature-card p { font-size: 14px; color: var(--muted); line-height: 1.6; }
+/* ── BOTTOM BAR ── */
+.bottom-bar{
+  border-top:1px solid var(--border);background:var(--s1);
+  padding:0 24px;height:40px;display:flex;align-items:center;justify-content:space-between;
+  font-size:10px;color:var(--muted);letter-spacing:.3px;flex-shrink:0;
+}
+.bb-stats{display:flex;align-items:center;gap:16px;}
+.bb-stat{display:flex;align-items:center;gap:6px;}
+.bb-val{color:var(--green);font-weight:700;font-size:11px;}
 
-  /* VS TABLE */
-  .vs-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 14px;
-    margin-top: 32px;
-  }
-  .vs-table th {
-    padding: 12px 20px;
-    text-align: left;
-    color: var(--muted);
-    font-weight: 600;
-    border-bottom: 1px solid var(--border);
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: .4px;
-  }
-  .vs-table td {
-    padding: 14px 20px;
-    border-bottom: 1px solid #111827;
-    color: var(--text);
-  }
-  .vs-table tr:last-child td { border-bottom: none; }
-  .vs-table tr:hover td { background: #0f172a; }
-  .check { color: var(--green); font-weight: 700; }
-  .cross { color: #475569; }
-  .highlight-col { color: var(--blue); font-weight: 600; }
-
-  /* CTA SECTION */
-  .cta-section {
-    text-align: center;
-    padding: 80px 24px;
-    border-top: 1px solid var(--border);
-  }
-  .cta-section h2 { font-size: 40px; font-weight: 900; letter-spacing: -1.5px; color: #fff; margin-bottom: 16px; }
-  .cta-section p { font-size: 16px; color: var(--muted); margin-bottom: 36px; }
-
-  /* FOOTER */
-  footer {
-    border-top: 1px solid var(--border);
-    padding: 28px 40px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 13px;
-    color: var(--muted);
-    flex-wrap: wrap;
-    gap: 12px;
-  }
+/* ── FOOTER ── */
+footer{border-top:1px solid var(--border);background:var(--s1);padding:14px 24px;display:flex;justify-content:space-between;align-items:center;font-size:10px;color:var(--muted);flex-wrap:wrap;gap:8px;}
 </style>
 </head>
 <body>
@@ -286,196 +119,218 @@
 <!-- NAV -->
 <nav>
   <a class="nav-logo" href="/">
-    <div class="logo-dot"></div>
-    SharpWatch
+    <div class="logo-box">SW</div>
+    <span class="logo-name">SHARPWATCH</span>
   </a>
   <div class="nav-links">
-    <a href="#how-it-works">How it works</a>
-    <a href="#vs">vs OddsJam</a>
-    <a href="/dashboard.html" class="btn btn-primary">Open Dashboard →</a>
+    <a href="/dashboard.html">DASHBOARD</a>
+    <a href="/dashboard.html">+EV BETS</a>
+    <a href="/dashboard.html">ARBITRAGE</a>
+    <a href="/dashboard.html">KALSHI</a>
+  </div>
+  <div class="nav-right">
+    <div class="live-pill"><div class="live-dot"></div> LIVE · <span id="nav-clock">--:--:--</span></div>
+    <a href="/dashboard.html" class="cta-btn">&gt; OPEN TERMINAL</a>
   </div>
 </nav>
 
 <!-- HERO -->
 <div class="hero">
-  <div class="hero-badge">
-    <div class="live-dot"></div>
-    Live · Updates every 2 minutes
+  <div class="hero-top">
+    <div class="hero-eyebrow">// MARKET INTELLIGENCE TERMINAL · 3 PLATFORMS · 200 TRADERS</div>
+    <h1>FOLLOW THE<br><span class="accent">SHARP MONEY.</span></h1>
+    <p class="hero-desc">
+      Where are the top 200 most profitable Polymarket traders putting their money right now?
+      What +EV bets and arbitrage opportunities exist across 10+ sportsbooks? All live, below.
+    </p>
   </div>
-  <h1>Follow the<br>smart money.</h1>
-  <p>SharpWatch tracks where the top 200 most profitable Polymarket traders are putting their money — right now, in real time.</p>
-  <div class="hero-cta">
-    <a href="/dashboard.html" class="btn btn-primary">View Live Dashboard →</a>
-    <a href="#how-it-works" class="btn btn-outline">How it works</a>
+
+  <!-- LIVE DATA PANELS -->
+  <div class="data-split">
+
+    <!-- LEFT: Smart Money -->
+    <div class="data-panel">
+      <div class="panel-head">
+        <span class="panel-title">SMART MONEY POSITIONS</span>
+        <span class="panel-sub" id="pm-updated">POLYMARKET · 200 TRADERS</span>
+      </div>
+      <div class="panel-body" id="pm-panel">
+        <div class="panel-loader"><div class="spinner"></div>FETCHING…</div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Sportsbook Edges -->
+    <div class="data-panel">
+      <div class="panel-head">
+        <span class="panel-title" id="edge-title">LIVE SPORTSBOOK EDGES</span>
+        <span class="panel-sub" id="edge-sub">+EV BETS · 10+ BOOKS</span>
+      </div>
+      <div class="panel-body" id="edge-panel">
+        <div class="panel-loader"><div class="spinner"></div>FETCHING…</div>
+      </div>
+    </div>
+
   </div>
 </div>
 
-<!-- STATS BAR -->
-<div class="stats-bar">
-  <div class="stat">
-    <div class="stat-number">200</div>
-    <div class="stat-label">Top traders tracked</div>
+<!-- BOTTOM STATS BAR -->
+<div class="bottom-bar">
+  <div class="bb-stats">
+    <div class="bb-stat">TRADERS <span class="bb-val" id="stat-traders">—</span></div>
+    <div class="bb-stat">MARKETS <span class="bb-val" id="stat-markets">—</span></div>
+    <div class="bb-stat">KALSHI <span class="bb-val" id="stat-kalshi">—</span></div>
+    <div class="bb-stat">EV BETS <span class="bb-val" id="stat-ev">—</span></div>
+    <div class="bb-stat">API CREDITS <span class="bb-val" id="stat-credits">—</span>/500</div>
   </div>
-  <div class="stat">
-    <div class="stat-number">200+</div>
-    <div class="stat-label">Markets analyzed</div>
-  </div>
-  <div class="stat">
-    <div class="stat-number">2 min</div>
-    <div class="stat-label">Refresh interval</div>
-  </div>
-  <div class="stat">
-    <div class="stat-number">6</div>
-    <div class="stat-label">Market categories</div>
-  </div>
-</div>
-
-<!-- LIVE PREVIEW -->
-<div class="section" id="how-it-works">
-  <div class="section-label">Live preview</div>
-  <h2>What the smart money<br>is trading right now</h2>
-  <p>Each card shows a market, how many of the top 200 traders hold a position, and which side they're on.</p>
-  <div class="preview-grid" id="preview-grid">
-    <!-- Populated by JS -->
-  </div>
-  <div style="text-align:center">
-    <a href="/dashboard.html" class="btn btn-primary" style="font-size:15px;padding:12px 32px">See all 200+ markets →</a>
-  </div>
-</div>
-
-<!-- FEATURES -->
-<div class="section">
-  <div class="section-label">Features</div>
-  <h2>Everything you need to<br>trade with an edge</h2>
-  <p>Built for serious prediction market traders who want to know where the alpha is.</p>
-  <div class="features-grid">
-    <div class="feature-card">
-      <div class="feature-icon">🎯</div>
-      <h3>Smart Money Consensus</h3>
-      <p>See exactly how many of the top 200 profit-ranked traders are in each market — and which side they're on.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">⚡</div>
-      <h3>Live Auto-Refresh</h3>
-      <p>Data updates every 2 minutes automatically. The dashboard refreshes without any page reload.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">🏷️</div>
-      <h3>Category Filters</h3>
-      <p>Instantly filter by Sports, Politics, Crypto, Geopolitics, Science & AI, and Entertainment.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">🇺🇸</div>
-      <h3>US Restriction Labels</h3>
-      <p>Markets with US access restrictions are clearly labeled so you never waste time on a trade you can't make.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">📊</div>
-      <h3>200+ Markets Ranked</h3>
-      <p>Markets are ranked by trader overlap and combined dollar value — highest conviction trades rise to the top.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">🔗</div>
-      <h3>On-Chain Data</h3>
-      <p>Pulled directly from Polymarket's own API — the same endpoints their frontend uses. No middlemen, no delay.</p>
-    </div>
-  </div>
-</div>
-
-<!-- VS TABLE -->
-<div class="section" id="vs">
-  <div class="section-label">Comparison</div>
-  <h2>SharpWatch vs OddsJam</h2>
-  <p>Same concept — follow the sharp money — different market.</p>
-  <table class="vs-table">
-    <thead>
-      <tr>
-        <th>Feature</th>
-        <th class="highlight-col">SharpWatch</th>
-        <th>OddsJam</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr><td>Tracks smart money positions</td><td class="check highlight-col">✓</td><td class="check">✓</td></tr>
-      <tr><td>Prediction markets (Polymarket)</td><td class="check highlight-col">✓</td><td class="cross">✗</td></tr>
-      <tr><td>Sports betting lines</td><td class="cross">✗</td><td class="check">✓</td></tr>
-      <tr><td>Politics, Crypto, Geopolitics markets</td><td class="check highlight-col">✓</td><td class="cross">✗</td></tr>
-      <tr><td>On-chain wallet tracking</td><td class="check highlight-col">✓</td><td class="cross">✗</td></tr>
-      <tr><td>Competition</td><td class="highlight-col">First mover</td><td>Very crowded</td></tr>
-      <tr><td>Free to use</td><td class="check highlight-col">✓ Free</td><td class="cross">$99/mo</td></tr>
-    </tbody>
-  </table>
-</div>
-
-<!-- CTA -->
-<div class="cta-section">
-  <h2>Start tracking<br>smart money today.</h2>
-  <p>Free. No signup. Live data updated every 2 minutes.</p>
-  <a href="/dashboard.html" class="btn btn-primary" style="font-size:16px;padding:14px 36px">Open the Dashboard →</a>
+  <a href="/dashboard.html" class="cta-btn">&gt; OPEN FULL TERMINAL →</a>
 </div>
 
 <!-- FOOTER -->
 <footer>
-  <div style="display:flex;align-items:center;gap:8px">
-    <div class="logo-dot"></div>
-    <strong style="color:#fff">SharpWatch</strong>
-    <span>· Prediction market intelligence</span>
-  </div>
-  <div>Data sourced from Polymarket's public API · Not financial advice</div>
+  <span><span style="color:var(--green);font-weight:700">SW</span> SHARPWATCH // MARKET INTELLIGENCE TERMINAL · NOT FINANCIAL ADVICE</span>
+  <span>DATA: POLYMARKET · KALSHI · THE-ODDS-API PUBLIC APIs</span>
 </footer>
 
 <script>
-  const CAT_META = {
-    "Sports":        { icon: "🏆", color: "#f59e0b" },
-    "Politics":      { icon: "🗳️",  color: "#a78bfa" },
-    "Crypto":        { icon: "₿",   color: "#06b6d4" },
-    "Geopolitics":   { icon: "🌍",  color: "#f87171" },
-    "Science & AI":  { icon: "🔬",  color: "#34d399" },
-    "Entertainment": { icon: "🎬",  color: "#f472b6" },
-    "Other":         { icon: "◈",   color: "#94a3b8" },
-  };
+const CAT_COLOR={
+  'Sports':'#ffc107','Politics':'#ce93d8','Crypto':'#00e5ff',
+  'Geopolitics':'#ff5252','Economics':'#69f0ae','Science & AI':'#69f0ae',
+  'Entertainment':'#f48fb1','Other':'#7da87d',
+};
 
-  async function loadPreview() {
-    try {
-      const res  = await fetch('/api/positions');
-      if (!res.ok) return;
-      const data = await res.json();
-      const top  = (data.markets || []).slice(0, 6);
-      const n    = data.traders_analyzed || 200;
-      const grid = document.getElementById('preview-grid');
-      grid.innerHTML = top.map((m, i) => {
-        const meta  = CAT_META[m.category] || CAT_META["Other"];
-        const pct   = Math.round(m.trader_count / n * 100);
-        const pills = Object.entries(m.sides).map(([side, cnt]) =>
-          `<span class="pc-pill" style="background:${m.unanimous?'#4ade8018':'#fbbf2418'};color:${m.unanimous?'#4ade80':'#fbbf24'};border:1px solid ${m.unanimous?'#4ade8035':'#fbbf2435'}">${cnt}× ${side}</span>`
-        ).join('');
-        const usBadge = m.us_restricted
-          ? '<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;background:#ef444418;color:#f87171;border:1px solid #ef444440;flex-shrink:0">🚫 US</span>'
-          : '';
-        return `
-          <div class="preview-card" style="border-color:${meta.color}28">
-            <div class="pc-top">
-              <span class="pc-rank">#${i+1}</span>
-              <span class="pc-cat" style="color:${meta.color}">${meta.icon} ${m.category}</span>
-              ${usBadge}
-              <span class="pc-money">$${m.total_value.toLocaleString(undefined,{maximumFractionDigits:0})}</span>
-            </div>
-            <div class="pc-divider" style="background:linear-gradient(90deg,${meta.color}40,transparent)"></div>
-            <div class="pc-title">${m.title}</div>
-            <div class="pc-bottom">
-              <div>
-                <div class="pc-count" style="color:${meta.color}">${m.trader_count}<span class="pc-of">/${n}</span></div>
-                <div class="pc-label">traders in</div>
-                <div class="pc-bar-wrap"><div class="pc-bar" style="width:${pct}%;background:${meta.color}"></div></div>
-              </div>
-              <div class="pc-pills">${pills}</div>
-            </div>
-          </div>`;
-      }).join('');
-    } catch(e) { console.warn('Preview load failed', e); }
+function pad(n){return String(n).padStart(2,'0');}
+function updateClock(){
+  const d=new Date();
+  const t=pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds());
+  document.getElementById('nav-clock').textContent=t;
+}
+setInterval(updateClock,1000); updateClock();
+
+function fmtMoney(n){
+  if(n>=1000000) return '$'+Math.round(n/1000000)+'M';
+  if(n>=1000)    return '$'+Math.round(n/1000)+'K';
+  return '$'+Math.round(n);
+}
+function fmtOdds(n){return n>0?`+${n}`:`${n}`;}
+
+function renderPM(data){
+  const markets=(data.markets||[]).slice(0,12);
+  const n=data.traders_analyzed||200;
+  if(!markets.length){
+    document.getElementById('pm-panel').innerHTML='<div class="panel-loader"><span>NO DATA YET — LOADING…</span></div>';
+    return;
   }
+  document.getElementById('pm-updated').textContent=`POLYMARKET · ${n} TRADERS`;
+  document.getElementById('stat-traders').textContent=n;
+  document.getElementById('stat-markets').textContent=data.markets?.length||'—';
+  document.getElementById('pm-panel').innerHTML=markets.map((m,i)=>{
+    const c=CAT_COLOR[m.category]||'#7da87d';
+    const pct=Math.round(m.trader_count/n*100);
+    // dominant side
+    const dominantSide=Object.keys(m.sides||{})[0]||'YES';
+    const dominantCnt=(m.sides||{})[dominantSide]||0;
+    const dolVal=m.side_values?.[dominantSide];
+    const dolStr=dolVal?' · '+fmtMoney(dolVal):'';
+    return `<div class="pm-row">
+      <span class="pr-num">#${String(i+1).padStart(3,'0')}</span>
+      <div style="overflow:hidden">
+        <div class="pr-title">${m.title}</div>
+        <div class="pr-meta" style="color:${c}">${m.category.toUpperCase()} ${m.us_restricted?'· 🚫 US':''}</div>
+      </div>
+      <div>
+        <div class="pr-count" style="color:${c};text-shadow:0 0 8px ${c}55">${m.trader_count}<span style="font-size:11px;color:var(--muted);font-weight:400">/${n}</span></div>
+        <div class="pr-pct">${pct}% IN</div>
+      </div>
+      <div>
+        <div class="pr-side" style="color:${m.unanimous?'var(--green)':'var(--amber)'}">${dominantSide}</div>
+        <div style="font-size:9px;color:var(--muted);text-align:right">${dolStr}</div>
+        <div style="background:var(--border);height:2px;margin-top:4px"><div style="height:2px;background:${c};width:${pct}%;opacity:.7"></div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
 
-  loadPreview();
+function renderEdges(evData, arbData, oddsData){
+  const bets=evData?.bets||[];
+  const arbs=arbData?.arbs||[];
+
+  // Prefer EV bets, fall back to arbs, fall back to best odds
+  if(bets.length){
+    document.getElementById('edge-title').textContent='+EV BETS';
+    document.getElementById('edge-sub').textContent=`${bets.length} FOUND · RANKED BY EDGE`;
+    document.getElementById('stat-ev').textContent=bets.length;
+    document.getElementById('edge-panel').innerHTML=bets.slice(0,12).map(b=>{
+      const evColor=b.ev_pct>=6?'var(--green)':b.ev_pct>=3?'var(--amber)':'var(--text)';
+      return `<div class="ev-row">
+        <div style="overflow:hidden">
+          <div class="er-game">${b.outcome} · ${b.game}</div>
+          <div class="er-meta">${b.sport}</div>
+        </div>
+        <div class="er-book">${b.book.replace(/_/g,' ')}</div>
+        <div class="er-odds">${b.odds>0?'+':''}${b.odds}</div>
+        <div class="er-ev" style="color:${evColor}">+${b.ev_pct}%</div>
+      </div>`;
+    }).join('');
+  } else if(arbs.length){
+    document.getElementById('edge-title').textContent='ARBITRAGE OPS';
+    document.getElementById('edge-sub').textContent=`${arbs.length} FOUND · GUARANTEED PROFIT`;
+    document.getElementById('edge-panel').innerHTML=arbs.slice(0,8).map(a=>`
+      <div class="ev-row">
+        <div style="overflow:hidden">
+          <div class="er-game">${a.game}</div>
+          <div class="er-meta">${a.sport} · ${a.legs.map(l=>l.book.replace(/_/g,' ')).join(' vs ')}</div>
+        </div>
+        <div></div>
+        <div></div>
+        <div class="er-ev" style="color:var(--green)">+${a.profit_pct}%</div>
+      </div>`).join('');
+  } else if(oddsData?.error==='no_key'){
+    document.getElementById('edge-title').textContent='SPORTSBOOK EDGES';
+    document.getElementById('edge-sub').textContent='API KEY REQUIRED';
+    document.getElementById('edge-panel').innerHTML=`<div class="panel-loader" style="flex-direction:column;align-items:flex-start;padding:20px 14px;gap:6px">
+      <div style="color:var(--amber);font-size:11px;font-weight:700">⚠ ODDS API KEY REQUIRED</div>
+      <div style="color:var(--muted);font-size:10px;line-height:1.8">
+        1. Go to the-odds-api.com → sign up (free)<br>
+        2. Set ODDS_API_KEY in backend/.env<br>
+        3. Restart server
+      </div>
+    </div>`;
+  } else {
+    document.getElementById('edge-panel').innerHTML='<div class="panel-loader"><span>LOADING ODDS DATA…</span></div>';
+  }
+}
+
+async function loadAll(){
+  const [pmRes,evRes,arbRes,oddsRes,kalRes,statusRes]=await Promise.all([
+    fetch('/api/polymarket').catch(()=>null),
+    fetch('/api/ev').catch(()=>null),
+    fetch('/api/arb').catch(()=>null),
+    fetch('/api/odds').catch(()=>null),
+    fetch('/api/kalshi').catch(()=>null),
+    fetch('/api/status').catch(()=>null),
+  ]);
+
+  const pm    =pmRes?.ok    ? await pmRes.json()    : null;
+  const ev    =evRes?.ok    ? await evRes.json()    : null;
+  const arb   =arbRes?.ok   ? await arbRes.json()   : null;
+  const odds  =oddsRes?.ok  ? await oddsRes.json()  : null;
+  const kal   =kalRes?.ok   ? await kalRes.json()   : null;
+  const status=statusRes?.ok? await statusRes.json(): null;
+
+  if(pm)  renderPM(pm);
+  renderEdges(ev, arb, odds);
+
+  if(status){
+    document.getElementById('stat-kalshi').textContent  = status.kalshi?.market_count||'—';
+    document.getElementById('stat-credits').textContent = status.odds?.credits_remaining??'—';
+  }
+  if(kal?.markets?.length){
+    document.getElementById('stat-kalshi').textContent=kal.markets.length;
+  }
+}
+
+loadAll();
+setInterval(loadAll, 30000);
 </script>
 </body>
 </html>

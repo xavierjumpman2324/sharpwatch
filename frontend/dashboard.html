@@ -3,683 +3,559 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SharpWatch — Dashboard</title>
+<title>SHARPWATCH // Terminal</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
-  --bg: #070b14; --surface: #0f172a; --surface2: #111827;
-  --border: #1e293b; --border2: #263144;
-  --text: #e2e8f0; --muted: #64748b; --muted2: #475569;
-  --blue: #58a6ff; --green: #4ade80; --amber: #fbbf24;
-  --red: #f87171; --purple: #a78bfa; --cyan: #06b6d4;
-  --sidebar: 220px;
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#050905;--s1:#080e08;--s2:#0c140c;
+  --border:#172317;--border2:#1e301e;
+  --text:#7da87d;--bright:#b8d8b8;
+  --green:#00e676;--green2:#69f0ae;
+  --amber:#ffc107;--red:#ff5252;--cyan:#00e5ff;
+  --muted:#3a563a;--dim:#0d140d;
 }
-body {
-  background: var(--bg); color: var(--text);
-  font-family: 'Inter', sans-serif; display: flex;
-  min-height: 100vh; font-size: 14px;
+body{
+  background-color:var(--bg);
+  background-image:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,230,118,.007) 3px,rgba(0,230,118,.007) 4px);
+  color:var(--text);font-family:'JetBrains Mono',monospace;font-size:13px;
+  display:flex;flex-direction:column;min-height:100vh;
 }
 
-/* ── SIDEBAR ── */
-.sidebar {
-  width: var(--sidebar); flex-shrink: 0;
-  background: var(--surface); border-right: 1px solid var(--border);
-  display: flex; flex-direction: column;
-  position: fixed; top: 0; left: 0; bottom: 0; z-index: 50;
-  overflow-y: auto;
+/* ── TOP NAV ─────────────────────────────────────────────────────────────── */
+.topnav{
+  display:flex;align-items:stretch;height:44px;
+  border-bottom:1px solid var(--border);background:var(--s1);
+  position:sticky;top:0;z-index:50;flex-shrink:0;
 }
-.sidebar-logo {
-  display: flex; align-items: center; gap: 9px;
-  padding: 20px 18px 16px; border-bottom: 1px solid var(--border);
-  text-decoration: none;
+.nav-logo{
+  display:flex;align-items:center;gap:8px;padding:0 18px;
+  border-right:1px solid var(--border);text-decoration:none;flex-shrink:0;
 }
-.logo-dot { width: 9px; height: 9px; border-radius: 50%; background: linear-gradient(135deg,var(--blue),var(--purple)); box-shadow: 0 0 10px #58a6ff55; flex-shrink: 0; }
-.logo-text { font-size: 16px; font-weight: 800; color: #fff; }
-.logo-tag { font-size: 9px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-top: 1px; }
-
-.nav-section { padding: 14px 10px 6px; }
-.nav-label { font-size: 10px; font-weight: 700; color: var(--muted2); text-transform: uppercase; letter-spacing: .7px; padding: 0 8px; margin-bottom: 4px; }
-.nav-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 9px 10px; border-radius: 8px; cursor: pointer;
-  color: var(--muted); font-size: 13px; font-weight: 500;
-  transition: all .15s; border: none; background: none;
-  width: 100%; text-align: left; font-family: 'Inter', sans-serif;
+.logo-box{
+  width:24px;height:24px;border:1px solid var(--green);
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;font-weight:800;color:var(--green);
+  box-shadow:0 0 8px rgba(0,230,118,.2);flex-shrink:0;
 }
-.nav-item:hover { background: var(--border); color: var(--text); }
-.nav-item.active { background: var(--blue)18; color: var(--blue); font-weight: 600; }
-.nav-item .icon { font-size: 16px; flex-shrink: 0; width: 20px; text-align: center; }
-.nav-badge { margin-left: auto; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 10px; }
-.badge-green { background: var(--green)18; color: var(--green); }
-.badge-amber { background: var(--amber)18; color: var(--amber); }
-.badge-red   { background: var(--red)18;   color: var(--red); }
-.badge-blue  { background: var(--blue)18;  color: var(--blue); }
-
-.sidebar-footer { margin-top: auto; padding: 14px; border-top: 1px solid var(--border); }
-.credits-bar { background: var(--border); border-radius: 4px; height: 4px; margin: 6px 0; }
-.credits-fill { background: var(--green); height: 4px; border-radius: 4px; transition: width .4s; }
-.credits-label { font-size: 11px; color: var(--muted); }
-
-/* ── MAIN ── */
-.main { margin-left: var(--sidebar); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
-
-/* ── TOP BAR ── */
-.topbar {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 28px; border-bottom: 1px solid var(--border);
-  background: rgba(7,11,20,.9); backdrop-filter: blur(12px);
-  position: sticky; top: 0; z-index: 40;
+.logo-name{font-size:12px;font-weight:700;color:var(--bright);letter-spacing:.5px;}
+.tabs{display:flex;align-items:stretch;flex:1;overflow-x:auto;}
+.tab{
+  display:flex;align-items:center;gap:6px;padding:0 14px;
+  border-right:1px solid var(--border);
+  color:var(--muted);font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
+  cursor:pointer;background:none;border-top:none;border-bottom:2px solid transparent;border-left:none;
+  font-family:'JetBrains Mono',monospace;transition:all .1s;white-space:nowrap;
 }
-.page-title { font-size: 16px; font-weight: 700; color: #fff; }
-.page-subtitle { font-size: 12px; color: var(--muted); margin-top: 1px; }
-.topbar-right { display: flex; align-items: center; gap: 12px; }
-.refresh-chip {
-  display: flex; align-items: center; gap: 6px;
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 20px; padding: 5px 12px;
-  font-size: 12px; font-weight: 600; color: var(--muted);
+.tab:hover{color:var(--bright);background:rgba(0,230,118,.03);}
+.tab.active{color:var(--green);background:rgba(0,230,118,.06);border-bottom-color:var(--green);}
+.tab-badge{
+  font-size:9px;font-weight:700;padding:1px 5px;border:1px solid currentColor;
+  opacity:.7;min-width:18px;text-align:center;letter-spacing:0;
 }
-.live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: blink 1.2s infinite; }
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
-#countdown { font-variant-numeric: tabular-nums; }
-
-/* ── CONTENT ── */
-.content { padding: 28px; flex: 1; }
-.page { display: none; }
-.page.active { display: block; }
-
-/* ── TABLES ── */
-.data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-.data-table th {
-  text-align: left; padding: 10px 14px; color: var(--muted);
-  font-weight: 600; border-bottom: 1px solid var(--border);
-  font-size: 11px; text-transform: uppercase; letter-spacing: .4px;
-  white-space: nowrap;
+.nav-status{
+  display:flex;align-items:center;gap:10px;padding:0 16px;
+  border-left:1px solid var(--border);font-size:10px;color:var(--muted);
+  white-space:nowrap;flex-shrink:0;letter-spacing:.3px;
 }
-.data-table td { padding: 12px 14px; border-bottom: 1px solid #0d1117; vertical-align: middle; }
-.data-table tr:hover td { background: var(--surface); }
-.data-table tr:last-child td { border-bottom: none; }
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);
+  box-shadow:0 0 6px var(--green);animation:blink 1s infinite;flex-shrink:0;}
+@keyframes blink{0%,100%{opacity:1;box-shadow:0 0 6px var(--green)}50%{opacity:.4;box-shadow:none}}
+.ns-sep{color:var(--border2);}
+#countdown{font-variant-numeric:tabular-nums;color:var(--bright);font-weight:700;}
+#sb-clock{font-variant-numeric:tabular-nums;}
+.cred-row{display:flex;align-items:center;gap:5px;}
+.cred-bar-wrap{width:36px;height:3px;background:var(--border);border:1px solid var(--border2);}
+.cred-fill{height:3px;transition:width .4s;}
 
-/* ── CARDS ── */
-.card { background: var(--surface2); border: 1px solid var(--border); border-radius: 14px; padding: 20px; }
-.card-sm { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+/* ── CONTENT ─────────────────────────────────────────────────────────────── */
+.content{padding:20px 24px;flex:1;}
+.page{display:none;}
+.page.active{display:block;}
 
-/* ── STAT CARDS ── */
-.stat-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; margin-bottom: 28px; }
-.stat-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
-.stat-val { font-size: 28px; font-weight: 800; letter-spacing: -1px; line-height: 1; }
-.stat-lbl { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .4px; margin-top: 4px; }
+/* ── PAGE HEADER ─────────────────────────────────────────────────────────── */
+.ph{display:flex;align-items:baseline;gap:10px;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.ph h2{font-size:11px;font-weight:700;color:var(--bright);text-transform:uppercase;letter-spacing:1px;}
+.ph-sub{font-size:10px;color:var(--muted);}
+.ph-line{flex:1;height:1px;background:var(--border);}
 
-/* ── SMART MONEY CARDS ── */
-.pm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
-.pm-card {
-  border-radius: 14px; padding: 18px; position: relative; overflow: hidden;
-  transition: transform .2s, box-shadow .2s;
+/* ── TABLES ──────────────────────────────────────────────────────────────── */
+.t-wrap{border:1px solid var(--border);background:var(--s1);}
+.data-table{width:100%;border-collapse:collapse;font-size:12px;}
+.data-table th{
+  text-align:left;padding:8px 14px;color:var(--muted);
+  font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.5px;
+  border-bottom:1px solid var(--border);background:var(--s2);white-space:nowrap;
 }
-.pm-card::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(255,255,255,.03),transparent 60%); pointer-events:none; }
-.pm-card:hover { transform: translateY(-2px); }
-.pm-card.hidden { display: none; }
-.pc-top { display:flex; align-items:center; gap:8px; margin-bottom:10px; }
-.pc-rank { font-size:10px; font-weight:700; color:var(--muted); letter-spacing:.5px; flex-shrink:0; }
-.pc-rank.gold { background:linear-gradient(90deg,#f59e0b,#fcd34d); -webkit-background-clip:text; -webkit-text-fill-color:transparent; font-size:11px; }
-.pc-cat { font-size:11px; font-weight:700; flex:1; }
-.pc-us { font-size:10px; font-weight:700; padding:2px 6px; border-radius:8px; background:#ef444418; color:#f87171; border:1px solid #ef444430; flex-shrink:0; }
-.pc-money { font-size:13px; font-weight:700; color:var(--green); flex-shrink:0; }
-.pc-div { height:1px; margin-bottom:10px; opacity:.6; }
-.pc-title { font-size:14px; font-weight:600; line-height:1.4; margin-bottom:14px; min-height:38px; }
-.pc-bottom { display:flex; justify-content:space-between; align-items:flex-end; }
-.pc-count { font-size:28px; font-weight:800; line-height:1; letter-spacing:-1px; }
-.pc-of { font-size:14px; font-weight:400; color:#334155; }
-.pc-lbl { font-size:10px; color:var(--muted); margin:3px 0 6px; text-transform:uppercase; letter-spacing:.4px; font-weight:600; }
-.pc-bar-wrap { background:#1e293b; border-radius:3px; height:4px; width:80px; }
-.pc-bar { height:4px; border-radius:3px; }
-.pc-pills { display:flex; flex-wrap:wrap; gap:4px; justify-content:flex-end; max-width:150px; }
-.pill { font-size:10px; font-weight:600; padding:3px 8px; border-radius:20px; white-space:nowrap; }
-
-/* ── EV / ARB chips ── */
-.ev-chip { display:inline-block; padding:3px 8px; border-radius:6px; font-size:12px; font-weight:700; }
-.ev-high { background:#4ade8022; color:#4ade80; }
-.ev-mid  { background:#fbbf2422; color:#fbbf24; }
-.ev-low  { background:#94a3b822; color:#94a3b8; }
-
-.odds-chip { display:inline-block; padding:3px 10px; border-radius:6px; font-size:12px; font-weight:700; background:var(--border); color:var(--text); }
-.odds-best { background:var(--green)22; color:var(--green); }
-
-/* ── BOOK LOGO FALLBACK ── */
-.book-name { font-size:11px; font-weight:600; color:var(--muted); text-transform:capitalize; }
-
-/* ── FILTERS ── */
-.filter-row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:20px; }
-.filter-btn { background:var(--surface2); border:1px solid var(--border); color:var(--muted); font-size:12px; font-weight:600; padding:5px 14px; border-radius:20px; cursor:pointer; transition:all .15s; font-family:'Inter',sans-serif; }
-.filter-btn:hover { border-color:var(--blue); color:var(--blue); }
-.filter-btn.active { background:var(--blue)18; border-color:var(--blue)55; color:var(--blue); }
-
-/* ── NO KEY WARNING ── */
-.no-key-banner {
-  background:#1a0f00; border:1px solid var(--amber)30; border-radius:12px;
-  padding:24px 28px; margin-bottom:24px;
+.data-table td{padding:9px 14px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table tr:hover td{background:rgba(0,230,118,.03);}
+.data-table .group-row td{
+  background:var(--s2);font-size:10px;color:var(--muted);
+  font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:6px 14px;
 }
-.no-key-banner h3 { color:var(--amber); font-size:16px; margin-bottom:8px; }
-.no-key-banner p { color:#92836a; font-size:13px; line-height:1.6; }
-.no-key-banner code { background:#2a1f00; color:var(--amber); padding:2px 6px; border-radius:4px; font-size:12px; }
-.no-key-banner ol { padding-left:20px; margin-top:10px; color:#92836a; font-size:13px; line-height:2; }
 
-/* ── US BANNER ── */
-.us-banner { display:flex; align-items:flex-start; gap:10px; background:#130808; border:1px solid #ef444428; border-radius:10px; padding:10px 14px; margin-bottom:18px; font-size:12px; color:#f87171; font-weight:500; line-height:1.5; }
+/* ── CHIPS ───────────────────────────────────────────────────────────────── */
+.chip{display:inline-block;padding:2px 7px;font-size:11px;font-weight:700;border:1px solid;}
+.chip-g{color:var(--green);border-color:rgba(0,230,118,.4);background:rgba(0,230,118,.06);}
+.chip-a{color:var(--amber);border-color:rgba(255,193,7,.4);background:rgba(255,193,7,.06);}
+.chip-r{color:var(--red);border-color:rgba(255,82,82,.4);background:rgba(255,82,82,.06);}
+.chip-d{color:var(--muted);border-color:var(--border2);background:var(--s2);}
+.odds-chip{display:inline-block;padding:2px 7px;font-size:11px;font-weight:700;color:var(--text);border:1px solid var(--border2);background:var(--s2);}
+.odds-best{color:var(--green);border-color:rgba(0,230,118,.4);background:rgba(0,230,118,.06);}
+.book-name{font-size:11px;color:var(--muted);text-transform:capitalize;}
 
-/* ── CROSS-MARKET ── */
-.cross-card {
-  background:var(--surface2); border:1px solid var(--border); border-radius:14px;
-  padding:20px; margin-bottom:14px; display:grid;
-  grid-template-columns:1fr auto; gap:16px; align-items:start;
+/* ── FILTERS ─────────────────────────────────────────────────────────────── */
+.filter-row{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:14px;}
+.f-btn{
+  background:var(--s1);border:1px solid var(--border);color:var(--muted);
+  font-size:10px;font-weight:700;padding:4px 11px;cursor:pointer;
+  transition:all .1s;font-family:'JetBrains Mono',monospace;
+  text-transform:uppercase;letter-spacing:.5px;
 }
-.cross-diff-pos { color:var(--green); }
-.cross-diff-neg { color:var(--red); }
-.diff-bar { display:flex; align-items:center; gap:8px; margin-top:10px; }
-.diff-seg { height:6px; border-radius:3px; }
+.f-btn:hover{border-color:var(--green);color:var(--green);}
+.f-btn.active{background:rgba(0,230,118,.08);border-color:var(--green);color:var(--green);}
 
-/* ── LOADING ── */
-.loader { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:80px; gap:14px; color:var(--muted); }
-.spinner { width:32px; height:32px; border:3px solid var(--border); border-top-color:var(--blue); border-radius:50%; animation:spin .8s linear infinite; }
-@keyframes spin { to{transform:rotate(360deg)} }
+/* ── PM GRID ─────────────────────────────────────────────────────────────── */
+.pm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);}
+.pm-card{background:var(--s1);padding:14px 16px;transition:background .1s;border-left:2px solid var(--border);}
+.pm-card:hover{background:var(--s2);}
+.pm-card.hidden{display:none;}
+.pc-top{display:flex;align-items:center;gap:6px;margin-bottom:8px;font-size:10px;}
+.pc-num{color:var(--muted);font-weight:700;flex-shrink:0;letter-spacing:.3px;}
+.pc-cat{font-weight:700;flex:1;text-transform:uppercase;letter-spacing:.3px;font-size:10px;}
+.pc-us{font-size:9px;font-weight:700;padding:1px 5px;border:1px solid rgba(255,82,82,.4);color:var(--red);background:rgba(255,82,82,.06);}
+.pc-money{font-size:11px;font-weight:700;color:var(--green);}
+.pc-rule{border:none;border-top:1px solid var(--border);margin:0 0 8px;}
+.pc-title{font-size:12px;font-weight:600;color:var(--bright);line-height:1.45;margin-bottom:10px;min-height:36px;}
+.pc-bottom{display:flex;justify-content:space-between;align-items:flex-end;}
+.pc-count{font-size:22px;font-weight:800;line-height:1;letter-spacing:-1px;}
+.pc-of{font-size:13px;font-weight:400;color:var(--muted);}
+.pc-lbl{font-size:9px;color:var(--muted);margin:2px 0 5px;text-transform:uppercase;letter-spacing:.5px;}
+.pc-bar-wrap{background:var(--border);height:2px;width:70px;}
+.pc-bar{height:2px;}
+.pc-sides{display:flex;flex-direction:column;gap:2px;align-items:flex-end;max-width:160px;}
+.pc-side-row{font-size:10px;font-weight:600;white-space:nowrap;}
 
-/* ── SECTION HEADER ── */
-.section-hdr { margin-bottom:20px; }
-.section-hdr h2 { font-size:18px; font-weight:700; color:#fff; letter-spacing:-.3px; }
-.section-hdr p { font-size:13px; color:var(--muted); margin-top:3px; }
+/* ── WARNINGS ────────────────────────────────────────────────────────────── */
+.warn-box{border:1px solid rgba(255,193,7,.3);background:rgba(255,193,7,.04);padding:14px 18px;margin-bottom:14px;font-size:11px;color:var(--amber);line-height:1.7;}
+.warn-box strong{font-weight:700;}
+.warn-box code{font-family:'JetBrains Mono',monospace;background:rgba(255,193,7,.08);padding:1px 5px;border:1px solid rgba(255,193,7,.2);font-size:10px;}
+.warn-box ol{padding-left:18px;margin-top:8px;}
+.us-warn{border:1px solid rgba(255,82,82,.3);background:rgba(255,82,82,.04);padding:10px 14px;margin-bottom:12px;font-size:11px;color:var(--red);}
 
-/* ── KALSHI TABLE ── */
-.kalshi-prob { font-size:18px; font-weight:800; }
-.prob-high { color:var(--green); }
-.prob-mid  { color:var(--amber); }
-.prob-low  { color:var(--red); }
+/* ── ARB CARD ────────────────────────────────────────────────────────────── */
+.arb-card{border:1px solid var(--border);background:var(--s1);padding:16px;margin-bottom:10px;}
+.arb-leg{border:1px solid rgba(0,230,118,.25);background:rgba(0,230,118,.04);padding:12px;flex:1;min-width:150px;}
+
+/* ── CROSS CARD ──────────────────────────────────────────────────────────── */
+.cross-card{border:1px solid var(--border);background:var(--s1);padding:14px;margin-bottom:10px;display:grid;grid-template-columns:1fr auto;gap:14px;align-items:start;}
+.diff-pos{color:var(--green);text-shadow:0 0 8px rgba(0,230,118,.3);}
+.diff-neg{color:var(--red);text-shadow:0 0 8px rgba(255,82,82,.3);}
+
+/* ── KALSHI ──────────────────────────────────────────────────────────────── */
+.k-prob{font-size:15px;font-weight:800;}
+.kp-h{color:var(--green);}.kp-m{color:var(--amber);}.kp-l{color:var(--red);}
+
+/* ── LOADING ─────────────────────────────────────────────────────────────── */
+.loader{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px;gap:10px;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.5px;}
+.spinner{width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
 
-<!-- SIDEBAR -->
-<aside class="sidebar">
-  <a class="sidebar-logo" href="/">
-    <div class="logo-dot"></div>
-    <div>
-      <div class="logo-text">SharpWatch</div>
-      <div class="logo-tag">Prediction + Sportsbooks</div>
-    </div>
+<!-- TOP NAV -->
+<nav class="topnav">
+  <a class="nav-logo" href="/">
+    <div class="logo-box">SW</div>
+    <span class="logo-name">SHARPWATCH</span>
   </a>
+  <div class="tabs">
+    <button class="tab" onclick="nav('best-odds')">📋 BEST ODDS</button>
+    <button class="tab" onclick="nav('ev')">⚡ +EV BETS <span class="tab-badge" id="badge-ev">—</span></button>
+    <button class="tab" onclick="nav('arb')">💰 ARBITRAGE <span class="tab-badge" id="badge-arb">—</span></button>
+    <button class="tab" onclick="nav('polymarket')">🎯 SMART MONEY <span class="tab-badge" id="badge-pm">—</span></button>
+    <button class="tab" onclick="nav('kalshi')">📈 KALSHI <span class="tab-badge" id="badge-kal">—</span></button>
+    <button class="tab" onclick="nav('cross')">⚖️ CROSS-MKT <span class="tab-badge" id="badge-cross">—</span></button>
+  </div>
+  <div class="nav-status">
+    <div class="live-dot"></div>
+    <span class="ns-sep">│</span>
+    REFRESH <span id="countdown">—</span>s
+    <span class="ns-sep">│</span>
+    <span id="sb-clock">--:--:--</span>
+    <span class="ns-sep">│</span>
+    <span class="cred-row">
+      API <span id="credits-val">—</span>/500
+      <div class="cred-bar-wrap"><div class="cred-fill" id="credits-fill" style="width:100%;background:var(--green)"></div></div>
+    </span>
+  </div>
+</nav>
 
-  <div class="nav-section">
-    <div class="nav-label">Sportsbooks</div>
-    <button class="nav-item" onclick="nav('best-odds')">
-      <span class="icon">📋</span> Best Odds
-    </button>
-    <button class="nav-item" onclick="nav('ev')">
-      <span class="icon">⚡</span> +EV Bets
-      <span class="nav-badge badge-green" id="badge-ev">—</span>
-    </button>
-    <button class="nav-item" onclick="nav('arb')">
-      <span class="icon">💰</span> Arbitrage
-      <span class="nav-badge badge-amber" id="badge-arb">—</span>
-    </button>
+<!-- CONTENT -->
+<div class="content">
+
+  <!-- BEST ODDS -->
+  <div class="page" id="page-best-odds">
+    <div class="ph"><h2>BEST ODDS</h2><span class="ph-sub">// LINE SHOPPING ACROSS ALL MAJOR SPORTSBOOKS</span><div class="ph-line"></div></div>
+    <div id="best-odds-content"><div class="loader"><div class="spinner"></div><span>FETCHING ODDS…</span></div></div>
   </div>
 
-  <div class="nav-section">
-    <div class="nav-label">Prediction Markets</div>
-    <button class="nav-item" onclick="nav('polymarket')">
-      <span class="icon">🎯</span> Smart Money
-      <span class="nav-badge badge-blue" id="badge-pm">—</span>
-    </button>
-    <button class="nav-item" onclick="nav('kalshi')">
-      <span class="icon">📈</span> Kalshi
-      <span class="nav-badge badge-blue" id="badge-kal">—</span>
-    </button>
+  <!-- +EV -->
+  <div class="page" id="page-ev">
+    <div class="ph"><h2>POSITIVE EV BETS</h2><span class="ph-sub">// SPORTSBOOK LINES PRICED ABOVE TRUE PROBABILITY</span><div class="ph-line"></div></div>
+    <div id="ev-content"><div class="loader"><div class="spinner"></div></div></div>
   </div>
 
-  <div class="nav-section">
-    <div class="nav-label">Edge</div>
-    <button class="nav-item" onclick="nav('cross')">
-      <span class="icon">⚖️</span> Cross-Market
-      <span class="nav-badge badge-amber" id="badge-cross">—</span>
-    </button>
+  <!-- ARB -->
+  <div class="page" id="page-arb">
+    <div class="ph"><h2>ARBITRAGE</h2><span class="ph-sub">// GUARANTEED PROFIT — BET BOTH SIDES ACROSS BOOKS</span><div class="ph-line"></div></div>
+    <div id="arb-content"><div class="loader"><div class="spinner"></div></div></div>
   </div>
 
-  <div class="sidebar-footer">
-    <div class="credits-label">API Credits: <span id="credits-val">—</span> / 500</div>
-    <div class="credits-bar"><div class="credits-fill" id="credits-fill" style="width:100%"></div></div>
-    <div class="credits-label" style="color:var(--muted2);font-size:10px;margin-top:4px">The-Odds-API free tier</div>
-  </div>
-</aside>
-
-<!-- MAIN -->
-<div class="main">
-  <div class="topbar">
-    <div>
-      <div class="page-title" id="page-title">Best Odds</div>
-      <div class="page-subtitle" id="page-subtitle">Line shopping across all major sportsbooks</div>
-    </div>
-    <div class="topbar-right">
-      <div class="refresh-chip">
-        <div class="live-dot"></div>
-        <span>Refreshing in <span id="countdown">—</span>s</span>
-      </div>
-    </div>
+  <!-- POLYMARKET -->
+  <div class="page" id="page-polymarket">
+    <div class="ph"><h2>SMART MONEY</h2><span class="ph-sub">// TOP 200 POLYMARKET TRADERS BY PNL — CURRENT POSITIONS</span><div class="ph-line"></div></div>
+    <div class="us-warn">⚠ US RESTRICTION: Polymarket is geo-blocked for US users (CFTC). POLITICS markets fully blocked. Other categories may be accessible. [🚫 US] = restricted.</div>
+    <div class="filter-row" id="pm-tabs"></div>
+    <div class="pm-grid" id="pm-grid"><div class="loader"><div class="spinner"></div><span>FETCHING POSITIONS…</span></div></div>
   </div>
 
-  <div class="content">
-
-    <!-- BEST ODDS -->
-    <div class="page" id="page-best-odds">
-      <div id="best-odds-content"><div class="loader"><div class="spinner"></div><span>Loading odds…</span></div></div>
-    </div>
-
-    <!-- +EV -->
-    <div class="page" id="page-ev">
-      <div class="section-hdr">
-        <h2>Positive EV Bets</h2>
-        <p>Bets where a sportsbook's odds are better than the true probability — positive expected value over time.</p>
-      </div>
-      <div id="ev-content"><div class="loader"><div class="spinner"></div></div></div>
-    </div>
-
-    <!-- ARB -->
-    <div class="page" id="page-arb">
-      <div class="section-hdr">
-        <h2>Arbitrage Opportunities</h2>
-        <p>Bet both sides across different books for a guaranteed profit regardless of outcome.</p>
-      </div>
-      <div id="arb-content"><div class="loader"><div class="spinner"></div></div></div>
-    </div>
-
-    <!-- POLYMARKET -->
-    <div class="page" id="page-polymarket">
-      <div class="us-banner">⚠️ &nbsp;<span><strong>US users:</strong> Polymarket is geo-restricted (CFTC). <strong>Politics</strong> markets are fully blocked. Other categories may be accessible. <span class="pc-us" style="display:inline">🚫 US</span> = restricted.</span></div>
-      <div class="filter-row" id="pm-tabs"></div>
-      <div class="pm-grid" id="pm-grid"><div class="loader"><div class="spinner"></div><span>Fetching smart money…</span></div></div>
-    </div>
-
-    <!-- KALSHI -->
-    <div class="page" id="page-kalshi">
-      <div class="section-hdr">
-        <h2>Kalshi Markets</h2>
-        <p>Top prediction markets by trading volume on Kalshi. Fully legal in the US.</p>
-      </div>
-      <div class="filter-row" id="kalshi-tabs"></div>
-      <div id="kalshi-content"><div class="loader"><div class="spinner"></div></div></div>
-    </div>
-
-    <!-- CROSS-MARKET -->
-    <div class="page" id="page-cross">
-      <div class="section-hdr">
-        <h2>Cross-Market Edge</h2>
-        <p>When Polymarket or Kalshi traders price an event significantly differently from sportsbooks — this is your unique alpha.</p>
-      </div>
-      <div id="cross-content"><div class="loader"><div class="spinner"></div></div></div>
-    </div>
-
+  <!-- KALSHI -->
+  <div class="page" id="page-kalshi">
+    <div class="ph"><h2>KALSHI MARKETS</h2><span class="ph-sub">// TOP MARKETS BY OPEN INTEREST · FULLY LEGAL IN US</span><div class="ph-line"></div></div>
+    <div class="filter-row" id="kalshi-tabs"></div>
+    <div id="kalshi-content"><div class="loader"><div class="spinner"></div></div></div>
   </div>
+
+  <!-- CROSS-MARKET -->
+  <div class="page" id="page-cross">
+    <div class="ph"><h2>CROSS-MARKET EDGE</h2><span class="ph-sub">// PREDICTION MARKETS VS SPORTSBOOKS — DISCREPANCIES &gt;5%</span><div class="ph-line"></div></div>
+    <div id="cross-content"><div class="loader"><div class="spinner"></div></div></div>
+  </div>
+
 </div>
 
 <script>
-// ── State ──────────────────────────────────────────────────────────────────
-const PAGES = {
-  'best-odds':  { title:'Best Odds',        sub:'Line shopping across all major sportsbooks' },
-  'ev':         { title:'+EV Bets',         sub:'Positive expected value bets' },
-  'arb':        { title:'Arbitrage',        sub:'Guaranteed profit across books' },
-  'polymarket': { title:'Smart Money',      sub:'Top 200 Polymarket traders\' positions' },
-  'kalshi':     { title:'Kalshi Markets',   sub:'Top prediction markets by volume' },
-  'cross':      { title:'Cross-Market Edge',sub:'Where prediction markets disagree with sportsbooks' },
-};
-
 const CAT_META = {
-  'Sports':       {icon:'🏆', color:'#f59e0b'},
-  'Politics':     {icon:'🗳️', color:'#a78bfa'},
-  'Crypto':       {icon:'₿',  color:'#06b6d4'},
-  'Geopolitics':  {icon:'🌍', color:'#f87171'},
-  'Economics':    {icon:'📊', color:'#34d399'},
-  'Science & AI': {icon:'🔬', color:'#34d399'},
-  'Entertainment':{icon:'🎬', color:'#f472b6'},
-  'Other':        {icon:'◈',  color:'#94a3b8'},
+  'Sports':       {color:'#ffc107'},
+  'Politics':     {color:'#ce93d8'},
+  'Crypto':       {color:'#00e5ff'},
+  'Geopolitics':  {color:'#ff5252'},
+  'Economics':    {color:'#69f0ae'},
+  'Science & AI': {color:'#69f0ae'},
+  'Entertainment':{color:'#f48fb1'},
+  'Other':        {color:'#7da87d'},
 };
 
-let currentPage = 'best-odds';
-let pmCat = 'All';
-let kalCat = 'All';
-let countdownVal = 120;
-let refreshInterval = 120;
-let data = { pm: null, kalshi: null, odds: null, ev: null, arb: null, cross: null };
+let currentPage='best-odds', pmCat='All', kalCat='All';
+let countdownVal=120, refreshInterval=120;
+let data={pm:null,kalshi:null,odds:null,ev:null,arb:null,cross:null};
 
-// ── Navigation ─────────────────────────────────────────────────────────────
-function nav(page) {
-  currentPage = page;
-  document.querySelectorAll('.nav-item').forEach(b => {
-    b.classList.toggle('active', b.getAttribute('onclick') === `nav('${page}')`);
+function pad(n){return String(n).padStart(2,'0');}
+function updateClock(){
+  const d=new Date();
+  document.getElementById('sb-clock').textContent=pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds());
+}
+setInterval(updateClock,1000); updateClock();
+
+function nav(page){
+  currentPage=page;
+  document.querySelectorAll('.tab').forEach(b=>{
+    b.classList.toggle('active',b.getAttribute('onclick')===`nav('${page}')`);
   });
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById(`page-${page}`).classList.add('active');
-  document.getElementById('page-title').textContent = PAGES[page].title;
-  document.getElementById('page-subtitle').textContent = PAGES[page].sub;
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
   renderPage(page);
 }
 
-// ── Formatting ─────────────────────────────────────────────────────────────
-function fmtOdds(n) { return n > 0 ? `+${n}` : `${n}`; }
-function fmtMoney(n) { return '$' + Math.round(n).toLocaleString(); }
-function fmtTime(iso) {
-  if (!iso) return '—';
-  const d = new Date(iso);
-  return d.toLocaleDateString('en-US',{month:'short',day:'numeric'}) + ' ' +
+function fmtOdds(n){return n>0?`+${n}`:`${n}`;}
+function fmtMoney(n){
+  if(n>=1000000) return '$'+Math.round(n/1000000)+'M';
+  if(n>=1000)    return '$'+Math.round(n/1000)+'K';
+  return '$'+Math.round(n);
+}
+function fmtMoneyFull(n){return '$'+Math.round(n).toLocaleString();}
+function fmtTime(iso){
+  if(!iso) return '—';
+  const d=new Date(iso);
+  return d.toLocaleDateString('en-US',{month:'short',day:'numeric'})+' '+
          d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
 }
-function evClass(pct) { return pct >= 6 ? 'ev-high' : pct >= 3 ? 'ev-mid' : 'ev-low'; }
-function probClass(p) { return p >= 65 ? 'prob-high' : p >= 40 ? 'prob-mid' : 'prob-low'; }
+function evChip(p){
+  if(p>=6) return `<span class="chip chip-g">+${p}%</span>`;
+  if(p>=3) return `<span class="chip chip-a">+${p}%</span>`;
+  return `<span class="chip chip-d">+${p}%</span>`;
+}
+function kClass(p){return p>=65?'kp-h':p>=40?'kp-m':'kp-l';}
 
-// ── Render: Best Odds ──────────────────────────────────────────────────────
-function renderBestOdds(d) {
-  const el = document.getElementById('best-odds-content');
-  if (!d || d.error === 'no_key' || d.error === 'invalid_key') {
-    el.innerHTML = noKeyBanner(); return;
-  }
-  const games = d.games || [];
-  if (!games.length) { el.innerHTML = '<div class="loader"><span>No games found. Check your API key.</span></div>'; return; }
+// Best Odds
+function renderBestOdds(d){
+  const el=document.getElementById('best-odds-content');
+  if(!d||d.error==='no_key'||d.error==='invalid_key'){el.innerHTML=noKeyBanner();return;}
+  const games=d.games||[];
+  if(!games.length){el.innerHTML='<div class="loader"><span>NO GAMES FOUND.</span></div>';return;}
 
-  // Sport filters
-  const sports = [...new Set(games.map(g => g.sport))];
-  let activeSport = sports[0] || 'All';
+  const sports=[...(new Set(games.map(g=>g.sport)))];
+  let activeSport=sports[0]||'All';
 
-  function renderTable(sport) {
-    activeSport = sport;
-    const filtered = sport === 'All' ? games : games.filter(g => g.sport === sport);
-    const rows = filtered.map(g => {
-      const teams = Object.keys(g.best_odds);
-      const rowTeams = teams.map(team => {
-        const bo = g.best_odds[team] || {};
-        const fp = g.fair_probs?.[team];
+  function renderTable(sport){
+    activeSport=sport;
+    const filtered=sport==='All'?games:games.filter(g=>g.sport===sport);
+    const rows=filtered.map(g=>{
+      const teams=Object.keys(g.best_odds);
+      const teamRows=teams.map(team=>{
+        const bo=g.best_odds[team]||{};
+        const fp=g.fair_probs?.[team];
         return `<tr>
-          <td><strong>${team}</strong></td>
-          <td><span class="odds-chip odds-best">${fmtOdds(bo.american || 0)}</span></td>
-          <td><span class="book-name">${(bo.book || '').replace(/_/g,' ')}</span></td>
-          <td style="color:var(--muted)">${fp ? fp+'%' : '—'}</td>
-          <td style="color:var(--muted);font-size:12px">${fmtTime(g.commence)}</td>
+          <td style="color:var(--bright);font-weight:600">${team}</td>
+          <td><span class="odds-chip odds-best">${fmtOdds(bo.american||0)}</span></td>
+          <td><span class="book-name">${(bo.book||'').replace(/_/g,' ')}</span></td>
+          <td style="color:var(--text)">${fp?fp+'%':'—'}</td>
+          <td style="color:var(--muted);font-size:11px">${fmtTime(g.commence)}</td>
         </tr>`;
       }).join('');
-      return `<tr style="background:var(--surface)">
-        <td colspan="5" style="padding:8px 14px;font-size:12px;color:var(--muted);font-weight:600;border-bottom:1px solid var(--border)">${g.game} · ${g.sport}</td>
-      </tr>${rowTeams}`;
+      return `<tr class="group-row"><td colspan="5">${g.game} · ${g.sport}</td></tr>${teamRows}`;
     }).join('');
-
-    return `<table class="data-table">
-      <thead><tr>
-        <th>Team</th><th>Best Odds</th><th>Book</th><th>Fair Prob</th><th>Game Time</th>
-      </tr></thead>
-      <tbody>${rows}</tbody>
-    </table>`;
+    return `<div class="t-wrap"><table class="data-table"><thead><tr>
+      <th>TEAM</th><th>BEST ODDS</th><th>BOOK</th><th>FAIR PROB</th><th>GAME TIME</th>
+    </tr></thead><tbody>${rows}</tbody></table></div>`;
   }
 
-  const filters = ['All', ...sports].map(s =>
-    `<button class="filter-btn${s===activeSport?' active':''}" onclick="switchSport('${s}',this)">${s}</button>`
+  const filters=['All',...sports].map(s=>
+    `<button class="f-btn${s===activeSport?' active':''}" onclick="switchSport('${s}',this)">${s}</button>`
   ).join('');
-
-  el.innerHTML = `<div class="filter-row">${filters}</div><div id="odds-table">${renderTable(activeSport)}</div>`;
-
-  window.switchSport = (s, btn) => {
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  el.innerHTML=`<div class="filter-row">${filters}</div><div id="odds-table">${renderTable(activeSport)}</div>`;
+  window.switchSport=(s,btn)=>{
+    document.querySelectorAll('#best-odds-content .f-btn').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
-    document.getElementById('odds-table').innerHTML = renderTable(s);
+    document.getElementById('odds-table').innerHTML=renderTable(s);
   };
 }
 
-// ── Render: +EV ───────────────────────────────────────────────────────────
-function renderEV(d) {
-  const el = document.getElementById('ev-content');
-  if (!d || !d.bets) { el.innerHTML = noKeyBanner(); return; }
-  const bets = d.bets;
-  if (!bets.length) { el.innerHTML = '<div class="loader"><span>No +EV bets found right now.</span></div>'; return; }
-
-  document.getElementById('badge-ev').textContent = bets.length;
-  el.innerHTML = `<table class="data-table">
-    <thead><tr>
-      <th>Game</th><th>Bet</th><th>Book</th><th>Odds</th><th>Fair Prob</th><th>EV%</th><th>Sport</th>
-    </tr></thead>
-    <tbody>${bets.map(b => `<tr>
-      <td style="max-width:220px;font-weight:500">${b.game}</td>
-      <td><strong>${b.outcome}</strong></td>
-      <td class="book-name">${b.book.replace(/_/g,' ')}</td>
-      <td><span class="odds-chip">${fmtOdds(b.odds)}</span></td>
-      <td style="color:var(--muted)">${b.fair_prob}%</td>
-      <td><span class="ev-chip ${evClass(b.ev_pct)}">+${b.ev_pct}%</span></td>
-      <td style="color:var(--muted)">${b.sport}</td>
-    </tr>`).join('')}
-    </tbody>
-  </table>`;
+// +EV
+function renderEV(d){
+  const el=document.getElementById('ev-content');
+  if(!d||!d.bets){el.innerHTML=noKeyBanner();return;}
+  if(!d.bets.length){el.innerHTML='<div class="loader"><span>NO +EV BETS FOUND RIGHT NOW.</span></div>';return;}
+  document.getElementById('badge-ev').textContent=d.bets.length;
+  el.innerHTML=`<div class="t-wrap"><table class="data-table"><thead><tr>
+    <th>GAME</th><th>BET</th><th>BOOK</th><th>ODDS</th><th>FAIR PROB</th><th>EV%</th><th>SPORT</th>
+  </tr></thead><tbody>${d.bets.map(b=>`<tr>
+    <td style="max-width:200px;color:var(--text)">${b.game}</td>
+    <td style="color:var(--bright);font-weight:600">${b.outcome}</td>
+    <td class="book-name">${b.book.replace(/_/g,' ')}</td>
+    <td><span class="odds-chip">${fmtOdds(b.odds)}</span></td>
+    <td style="color:var(--muted)">${b.fair_prob}%</td>
+    <td>${evChip(b.ev_pct)}</td>
+    <td style="color:var(--muted)">${b.sport}</td>
+  </tr>`).join('')}</tbody></table></div>`;
 }
 
-// ── Render: Arb ────────────────────────────────────────────────────────────
-function renderArb(d) {
-  const el = document.getElementById('arb-content');
-  if (!d || !d.arbs) { el.innerHTML = noKeyBanner(); return; }
-  const arbs = d.arbs;
-  if (!arbs.length) { el.innerHTML = '<div class="loader"><span>No arb opportunities right now. Arbs are rare — check back soon.</span></div>'; return; }
-
-  document.getElementById('badge-arb').textContent = arbs.length;
-  el.innerHTML = arbs.map(a => `
-    <div class="card" style="margin-bottom:14px">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+// Arb
+function renderArb(d){
+  const el=document.getElementById('arb-content');
+  if(!d||!d.arbs){el.innerHTML=noKeyBanner();return;}
+  if(!d.arbs.length){el.innerHTML='<div class="loader"><span>NO ARB OPS RIGHT NOW. ARBS CLOSE FAST — CHECK BACK.</span></div>';return;}
+  document.getElementById('badge-arb').textContent=d.arbs.length;
+  el.innerHTML=d.arbs.map(a=>`
+    <div class="arb-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
         <div>
-          <div style="font-weight:700;font-size:15px;color:#fff">${a.game}</div>
-          <div style="font-size:12px;color:var(--muted);margin-top:2px">${a.sport} · ${fmtTime(a.commence)}</div>
+          <div style="font-size:13px;font-weight:700;color:var(--bright)">${a.game}</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:2px;letter-spacing:.3px">${a.sport} · ${fmtTime(a.commence)}</div>
         </div>
         <div style="text-align:right">
-          <div style="font-size:22px;font-weight:800;color:var(--green)">+${a.profit_pct}%</div>
-          <div style="font-size:11px;color:var(--muted)">guaranteed profit</div>
+          <div style="font-size:22px;font-weight:800;color:var(--green);text-shadow:0 0 10px rgba(0,230,118,.3)">+${a.profit_pct}%</div>
+          <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">GUARANTEED PROFIT</div>
         </div>
       </div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
-        ${a.legs.map(l => `
-          <div class="card-sm" style="flex:1;min-width:160px;border-color:var(--green)28">
-            <div style="font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">Bet: ${l.outcome}</div>
-            <div style="font-size:20px;font-weight:800;color:var(--green)">${fmtOdds(l.odds)}</div>
-            <div class="book-name" style="margin-top:4px">${l.book.replace(/_/g,' ')}</div>
-          </div>`).join('')}
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        ${a.legs.map(l=>`<div class="arb-leg">
+          <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">BET: ${l.outcome}</div>
+          <div style="font-size:18px;font-weight:800;color:var(--green)">${fmtOdds(l.odds)}</div>
+          <div class="book-name" style="margin-top:3px">${l.book.replace(/_/g,' ')}</div>
+        </div>`).join('')}
       </div>
-      <div style="margin-top:12px;font-size:12px;color:var(--muted)">
-        Bet $${(100/(a.legs.length)).toFixed(0)} on each leg → guaranteed ${a.profit_pct}% return
+      <div style="margin-top:10px;font-size:10px;color:var(--muted)">
+        STAKE $${(100/a.legs.length).toFixed(0)} ON EACH LEG → COLLECT ${a.profit_pct}% PROFIT
       </div>
     </div>`).join('');
 }
 
-// ── Render: Polymarket ─────────────────────────────────────────────────────
-function renderPolymarket(d) {
-  if (!d || !d.markets) return;
-  const markets = d.markets;
-  const n = d.traders_analyzed || 200;
-  const usedCats = [...new Set(markets.map(m => m.category))];
-  const tabOrder = ['All','Sports','Politics','Crypto','Geopolitics','Science & AI','Entertainment','Other'];
-  const tabs = ['All', ...tabOrder.slice(1).filter(c => usedCats.includes(c))];
+// Polymarket
+function renderPolymarket(d){
+  if(!d||!d.markets) return;
+  const markets=d.markets, n=d.traders_analyzed||200;
+  const usedCats=[...(new Set(markets.map(m=>m.category)))];
+  const order=['All','Sports','Politics','Crypto','Geopolitics','Science & AI','Entertainment','Other'];
+  const tabs=['All',...order.slice(1).filter(c=>usedCats.includes(c))];
 
-  document.getElementById('badge-pm').textContent = markets.length;
+  document.getElementById('badge-pm').textContent=markets.length;
+  document.getElementById('pm-tabs').innerHTML=tabs.map(t=>
+    `<button class="f-btn${t===pmCat?' active':''}" onclick="setPmCat('${t}',this)">${t}</button>`
+  ).join('');
 
-  const tabsEl = document.getElementById('pm-tabs');
-  tabsEl.innerHTML = tabs.map(t => {
-    const m = CAT_META[t] || {icon:'⚡', color:'#58a6ff'};
-    return `<button class="filter-btn${t===pmCat?' active':''}" onclick="setPmCat('${t}',this)">${m.icon} ${t}</button>`;
-  }).join('');
+  document.getElementById('pm-grid').innerHTML=markets.map((m,i)=>{
+    const rank=i+1;
+    const c=(CAT_META[m.category]||{}).color||'#7da87d';
+    const pct=Math.round(m.trader_count/n*100);
+    const hidden=pmCat!=='All'&&m.category!==pmCat?' hidden':'';
+    const rankTxt=rank===1
+      ? `<span class="pc-num" style="color:var(--amber)">▲ #001</span>`
+      : `<span class="pc-num">#${String(rank).padStart(3,'0')}</span>`;
+    const usBadge=m.us_restricted?'<span class="pc-us">🚫 US</span>':'';
 
-  const grid = document.getElementById('pm-grid');
-  grid.innerHTML = markets.map((m, i) => {
-    const rank = i + 1;
-    const meta = CAT_META[m.category] || CAT_META['Other'];
-    const c = meta.color;
-    const pct = Math.round(m.trader_count / n * 100);
-    const hidden = pmCat !== 'All' && m.category !== pmCat ? ' hidden' : '';
-    const rankHtml = rank === 1
-      ? '<span class="pc-rank gold">#1 HOT</span>'
-      : `<span class="pc-rank">#${rank}</span>`;
-    const usBadge = m.us_restricted ? '<span class="pc-us">🚫 US</span>' : '';
-    const pills = Object.entries(m.sides||{}).map(([side,cnt]) => {
-      const pc = m.unanimous ? '#4ade80' : '#fbbf24';
-      return `<span class="pill" style="background:${pc}18;color:${pc};border:1px solid ${pc}30">${cnt}× ${side}</span>`;
+    // Build sides with dollar breakdown
+    const sides=m.sides||{};
+    const sideVals=m.side_values||{};
+    const sidesHtml=Object.entries(sides).map(([outcome,cnt])=>{
+      const dolVal=sideVals[outcome];
+      const dolStr=dolVal?` · ${fmtMoney(dolVal)}`:'';
+      const pc=m.unanimous?'var(--green)':'var(--amber)';
+      return `<div class="pc-side-row" style="color:${pc}">${cnt}× ${outcome}${dolStr}</div>`;
     }).join('');
-    const cardStyle = rank === 1
-      ? `border:1px solid #f59e0b55;box-shadow:0 0 0 1px #f59e0b18,0 6px 24px #f59e0b10;background:linear-gradient(135deg,#1a1200,#0f0800)`
-      : `border:1px solid ${c}28;background:var(--surface2)`;
-    return `<div class="pm-card${hidden}" data-cat="${m.category}" style="${cardStyle}">
-      <div class="pc-top">${rankHtml}<span class="pc-cat" style="color:${c}">${meta.icon} ${m.category}</span>${usBadge}<span class="pc-money">${fmtMoney(m.total_value)}</span></div>
-      <div class="pc-div" style="background:linear-gradient(90deg,${c}40,transparent)"></div>
+
+    const borderColor=rank===1?'var(--amber)':c;
+    const bg=rank===1?'rgba(255,193,7,.04)':'var(--s1)';
+    return `<div class="pm-card${hidden}" data-cat="${m.category}" style="border-left-color:${borderColor};background:${bg}">
+      <div class="pc-top">
+        ${rankTxt}
+        <span class="pc-cat" style="color:${c}">${m.category.toUpperCase()}</span>
+        ${usBadge}
+        <span class="pc-money">${fmtMoneyFull(m.total_value)}</span>
+      </div>
+      <hr class="pc-rule">
       <div class="pc-title">${m.title}</div>
       <div class="pc-bottom">
         <div>
-          <div class="pc-count" style="color:${c}">${m.trader_count}<span class="pc-of">/${n}</span></div>
-          <div class="pc-lbl">traders in</div>
+          <div class="pc-count" style="color:${c};text-shadow:0 0 10px ${c}44">${m.trader_count}<span class="pc-of">/${n}</span></div>
+          <div class="pc-lbl">TRADERS · AVG ${fmtMoney(m.avg_position||0)}/POSITION</div>
           <div class="pc-bar-wrap"><div class="pc-bar" style="width:${pct}%;background:${c}"></div></div>
         </div>
-        <div class="pc-pills">${pills}</div>
+        <div class="pc-sides">${sidesHtml}</div>
       </div>
     </div>`;
   }).join('');
 }
 
-window.setPmCat = (cat, btn) => {
-  pmCat = cat;
-  document.querySelectorAll('#pm-tabs .filter-btn').forEach(b => b.classList.remove('active'));
+window.setPmCat=(cat,btn)=>{
+  pmCat=cat;
+  document.querySelectorAll('#pm-tabs .f-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  document.querySelectorAll('.pm-card').forEach(c => {
-    c.classList.toggle('hidden', cat !== 'All' && c.dataset.cat !== cat);
+  document.querySelectorAll('.pm-card').forEach(c=>{
+    c.classList.toggle('hidden',cat!=='All'&&c.dataset.cat!==cat);
   });
 };
 
-// ── Render: Kalshi ─────────────────────────────────────────────────────────
-function renderKalshi(d) {
-  if (!d || !d.markets) return;
-  const markets = d.markets;
-  document.getElementById('badge-kal').textContent = markets.length;
+// Kalshi
+function renderKalshi(d){
+  if(!d||!d.markets) return;
+  const markets=d.markets;
+  document.getElementById('badge-kal').textContent=markets.length;
+  const usedCats=[...(new Set(markets.map(m=>m.category)))];
+  const order=['All','Sports','Politics','Crypto','Geopolitics','Economics','Science & AI','Entertainment','Other'];
+  const tabs=['All',...order.slice(1).filter(c=>usedCats.includes(c))];
 
-  const usedCats = [...new Set(markets.map(m => m.category))];
-  const tabOrder = ['All','Sports','Politics','Crypto','Geopolitics','Economics','Science & AI','Entertainment','Other'];
-  const tabs = ['All', ...tabOrder.slice(1).filter(c => usedCats.includes(c))];
+  document.getElementById('kalshi-tabs').innerHTML=tabs.map(t=>
+    `<button class="f-btn${t===kalCat?' active':''}" onclick="setKalCat('${t}',this)">${t}</button>`
+  ).join('');
 
-  const tabsEl = document.getElementById('kalshi-tabs');
-  tabsEl.innerHTML = tabs.map(t => {
-    const m = CAT_META[t] || {icon:'◈',color:'#94a3b8'};
-    return `<button class="filter-btn${t===kalCat?' active':''}" onclick="setKalCat('${t}',this)">${m.icon} ${t}</button>`;
-  }).join('');
-
-  function tableHtml(cat) {
-    const filtered = cat === 'All' ? markets : markets.filter(m => m.category === cat);
-    return `<table class="data-table">
-      <thead><tr><th>Market</th><th>Category</th><th>Yes</th><th>No</th><th>Volume</th><th>Closes</th></tr></thead>
-      <tbody>${filtered.map(m => {
-        const yes = m.yes_price != null ? Math.round(m.yes_price*100) : null;
-        const no  = m.no_price  != null ? Math.round(m.no_price *100) : null;
-        const meta = CAT_META[m.category] || CAT_META['Other'];
-        return `<tr>
-          <td style="font-weight:500;max-width:300px">${m.title}</td>
-          <td><span style="font-size:11px;font-weight:700;color:${meta.color}">${meta.icon} ${m.category}</span></td>
-          <td><span class="kalshi-prob ${yes!=null?probClass(yes):''}' ">${yes!=null?yes+'¢':'—'}</span></td>
-          <td style="color:var(--muted)">${no!=null?no+'¢':'—'}</td>
-          <td style="color:var(--muted)">${fmtMoney(m.volume)}</td>
-          <td style="color:var(--muted);font-size:12px">${fmtTime(m.close_time)}</td>
-        </tr>`;
-      }).join('')}
-      </tbody>
-    </table>`;
+  function tableHtml(cat){
+    const filtered=cat==='All'?markets:markets.filter(m=>m.category===cat);
+    return `<div class="t-wrap"><table class="data-table"><thead><tr>
+      <th>MARKET</th><th>CATEGORY</th><th>YES</th><th>NO</th><th>VOLUME</th><th>CLOSES</th>
+    </tr></thead><tbody>${filtered.map(m=>{
+      const yes=m.yes_price!=null?Math.round(m.yes_price*100):null;
+      const no =m.no_price !=null?Math.round(m.no_price *100):null;
+      const c=(CAT_META[m.category]||{}).color||'#7da87d';
+      return `<tr>
+        <td style="font-weight:500;max-width:300px;color:var(--bright)">${m.title}</td>
+        <td style="font-size:10px;font-weight:700;color:${c};text-transform:uppercase;letter-spacing:.3px">${m.category}</td>
+        <td><span class="k-prob ${yes!=null?kClass(yes):''}">${yes!=null?yes+'¢':'—'}</span></td>
+        <td style="color:var(--muted)">${no!=null?no+'¢':'—'}</td>
+        <td style="color:var(--muted)">${fmtMoneyFull(m.volume)}</td>
+        <td style="color:var(--muted);font-size:11px">${fmtTime(m.close_time)}</td>
+      </tr>`;
+    }).join('')}</tbody></table></div>`;
   }
-
-  document.getElementById('kalshi-content').innerHTML = tableHtml(kalCat);
+  document.getElementById('kalshi-content').innerHTML=tableHtml(kalCat);
 }
 
-window.setKalCat = (cat, btn) => {
-  kalCat = cat;
-  document.querySelectorAll('#kalshi-tabs .filter-btn').forEach(b => b.classList.remove('active'));
+window.setKalCat=(cat,btn)=>{
+  kalCat=cat;
+  document.querySelectorAll('#kalshi-tabs .f-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   renderKalshi(data.kalshi);
 };
 
-// ── Render: Cross-Market ───────────────────────────────────────────────────
-function renderCross(d) {
-  const el = document.getElementById('cross-content');
-  if (!d || !d.edges) { el.innerHTML = '<div class="loader"><span>Loading…</span></div>'; return; }
-  const edges = d.edges;
-  document.getElementById('badge-cross').textContent = edges.length;
-
-  if (!edges.length) {
-    const needsKey = !data.odds || data.odds.error === 'no_key';
-    el.innerHTML = needsKey ? noKeyBanner() :
-      `<div class="loader"><span>No significant cross-market discrepancies found right now.</span></div>`;
+// Cross-market
+function renderCross(d){
+  const el=document.getElementById('cross-content');
+  if(!d||!d.edges){el.innerHTML='<div class="loader"><span>LOADING…</span></div>';return;}
+  const edges=d.edges;
+  document.getElementById('badge-cross').textContent=edges.length;
+  if(!edges.length){
+    el.innerHTML=(!data.odds||data.odds.error==='no_key')?noKeyBanner()
+      :'<div class="loader"><span>NO SIGNIFICANT DISCREPANCIES FOUND RIGHT NOW.</span></div>';
     return;
   }
-
-  el.innerHTML = edges.map(e => {
-    const diff = e.diff;
-    const diffStr = diff > 0 ? `+${diff}` : `${diff}`;
-    const diffClass = diff > 0 ? 'cross-diff-pos' : 'cross-diff-neg';
-    const bestSb = e.best_sb_odds || {};
-    const pmW = Math.round(e.pm_prob);
-    const sbW = Math.round(e.sb_prob);
+  el.innerHTML=edges.map(e=>{
+    const diff=e.diff, ds=diff>0?`+${diff}%`:`${diff}%`;
+    const dc=diff>0?'diff-pos':'diff-neg';
+    const sb=e.best_sb_odds||{};
     return `<div class="cross-card">
       <div>
-        <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">
-          ${e.source} · ${e.sport}
-        </div>
-        <div style="font-size:16px;font-weight:700;color:#fff;margin-bottom:2px">${e.game}</div>
-        <div style="font-size:13px;color:var(--muted);margin-bottom:14px">${e.pm_title}</div>
+        <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">${e.source} · ${e.sport}</div>
+        <div style="font-size:14px;font-weight:700;color:var(--bright);margin-bottom:2px">${e.game}</div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:10px">${e.pm_title}</div>
         <div style="display:flex;gap:24px;flex-wrap:wrap">
           <div>
-            <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px">Sportsbooks</div>
-            <div style="font-size:22px;font-weight:800;color:var(--text)">${e.sb_prob}%</div>
-            ${bestSb.american ? `<div style="font-size:12px;color:var(--muted)">Best: ${fmtOdds(bestSb.american)} (${(bestSb.book||'').replace(/_/g,' ')})</div>` : ''}
+            <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">SPORTSBOOKS</div>
+            <div style="font-size:20px;font-weight:800;color:var(--bright)">${e.sb_prob}%</div>
+            ${sb.american?`<div style="font-size:10px;color:var(--muted)">BEST: ${fmtOdds(sb.american)} (${(sb.book||'').replace(/_/g,' ')})</div>`:''}
           </div>
           <div>
-            <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px">${e.source}</div>
-            <div style="font-size:22px;font-weight:800;color:${diff>0?'var(--green)':'var(--red)'}">${e.pm_prob}%</div>
-            ${e.trader_count ? `<div style="font-size:12px;color:var(--muted)">${e.trader_count} smart money traders</div>` : ''}
-            ${e.ticker ? `<div style="font-size:12px;color:var(--muted)">Ticker: ${e.ticker}</div>` : ''}
+            <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">${e.source}</div>
+            <div style="font-size:20px;font-weight:800" class="${dc}">${e.pm_prob}%</div>
+            ${e.trader_count?`<div style="font-size:10px;color:var(--muted)">${e.trader_count} SHARP TRADERS</div>`:''}
+            ${e.ticker?`<div style="font-size:10px;color:var(--muted)">TICKER: ${e.ticker}</div>`:''}
           </div>
-        </div>
-        <div class="diff-bar" style="margin-top:14px">
-          <div style="flex:${sbW};min-width:4px" class="diff-seg" style="background:var(--border)"></div>
-          <div style="flex:${Math.abs(diff)};background:${diff>0?'var(--green)':'var(--red)'};min-width:4px" class="diff-seg"></div>
-          <div style="flex:${pmW};background:var(--blue);min-width:4px" class="diff-seg"></div>
         </div>
       </div>
       <div style="text-align:right;flex-shrink:0">
-        <div style="font-size:32px;font-weight:900;letter-spacing:-1px" class="${diffClass}">${diffStr}%</div>
-        <div style="font-size:11px;color:var(--muted);margin-top:2px">discrepancy</div>
-        <div style="font-size:12px;font-weight:600;margin-top:8px;color:${diff>0?'var(--green)':'var(--red)'}">${e.edge}</div>
+        <div style="font-size:30px;font-weight:900;letter-spacing:-1.5px" class="${dc}">${ds}</div>
+        <div style="font-size:9px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.5px">DISCREPANCY</div>
+        <div style="font-size:10px;font-weight:700;margin-top:8px;text-transform:uppercase;letter-spacing:.3px;color:${diff>0?'var(--green)':'var(--red)'}">${e.edge}</div>
       </div>
     </div>`;
   }).join('');
 }
 
-// ── No key banner ──────────────────────────────────────────────────────────
-function noKeyBanner() {
-  return `<div class="no-key-banner">
-    <h3>🔑 Add your free Odds API key to unlock sportsbook data</h3>
-    <p>SharpWatch uses The-Odds-API for real-time sportsbook odds. The free tier gives you 500 requests/month — enough to run SharpWatch all month with smart caching.</p>
-    <ol>
-      <li>Go to <strong>the-odds-api.com</strong> and sign up for free</li>
-      <li>Copy your API key</li>
-      <li>Open <code>~/polymarket-sharpwatch/backend/.env</code></li>
-      <li>Set <code>ODDS_API_KEY=your_key_here</code></li>
-      <li>Restart the server</li>
-    </ol>
-    <p style="margin-top:10px">Kalshi and Polymarket data work without any key — check those tabs now.</p>
+function noKeyBanner(){
+  return `<div class="warn-box"><strong>⚠ ODDS API KEY REQUIRED</strong><br><br>
+    SharpWatch uses The-Odds-API for sportsbook data. Free tier = 500 req/month.<br>
+    <ol><li>Go to <strong>the-odds-api.com</strong> → sign up (free)</li>
+    <li>Copy your API key</li>
+    <li>Edit <code>backend/.env</code> → set <code>ODDS_API_KEY=your_key</code></li>
+    <li>Restart the server</li></ol><br>
+    Kalshi and Polymarket data work without any key — check those tabs now.
   </div>`;
 }
 
-// ── Page renderer dispatcher ───────────────────────────────────────────────
-function renderPage(page) {
-  if (page === 'best-odds') renderBestOdds(data.odds);
-  if (page === 'ev')        renderEV(data.ev);
-  if (page === 'arb')       renderArb(data.arb);
-  if (page === 'polymarket')renderPolymarket(data.pm);
-  if (page === 'kalshi')    renderKalshi(data.kalshi);
-  if (page === 'cross')     renderCross(data.cross);
+function renderPage(page){
+  if(page==='best-odds') renderBestOdds(data.odds);
+  if(page==='ev')        renderEV(data.ev);
+  if(page==='arb')       renderArb(data.arb);
+  if(page==='polymarket')renderPolymarket(data.pm);
+  if(page==='kalshi')    renderKalshi(data.kalshi);
+  if(page==='cross')     renderCross(data.cross);
 }
 
-// ── Data fetching ──────────────────────────────────────────────────────────
-async function fetchAll() {
-  const [pmRes, kalRes, oddsRes, evRes, arbRes, bestRes, crossRes, statusRes] = await Promise.all([
+async function fetchAll(){
+  const [pmRes,kalRes,oddsRes,evRes,arbRes,bestRes,crossRes,statusRes]=await Promise.all([
     fetch('/api/polymarket').catch(()=>null),
     fetch('/api/kalshi').catch(()=>null),
     fetch('/api/odds').catch(()=>null),
@@ -689,56 +565,48 @@ async function fetchAll() {
     fetch('/api/cross').catch(()=>null),
     fetch('/api/status').catch(()=>null),
   ]);
+  if(pmRes?.ok)   data.pm    =await pmRes.json();
+  if(kalRes?.ok)  data.kalshi=await kalRes.json();
+  if(oddsRes?.ok) data.odds  =await oddsRes.json();
+  if(evRes?.ok)   data.ev    =await evRes.json();
+  if(arbRes?.ok)  data.arb   =await arbRes.json();
+  if(bestRes?.ok){const d=await bestRes.json();data.odds={...(data.odds||{}),...d,games:d.games};}
+  if(crossRes?.ok)data.cross =await crossRes.json();
 
-  if (pmRes?.ok)    data.pm     = await pmRes.json();
-  if (kalRes?.ok)   data.kalshi = await kalRes.json();
-  if (oddsRes?.ok)  data.odds   = await oddsRes.json();
-  if (evRes?.ok)    data.ev     = await evRes.json();
-  if (arbRes?.ok)   data.arb    = await arbRes.json();
-  if (bestRes?.ok)  { const d = await bestRes.json(); data.odds = {...(data.odds||{}), ...d, games: d.games }; }
-  if (crossRes?.ok) data.cross  = await crossRes.json();
-
-  if (statusRes?.ok) {
-    const s = await statusRes.json();
-    refreshInterval = s.refresh_interval || 120;
-    const creds = s.odds?.credits_remaining ?? 500;
-    document.getElementById('credits-val').textContent = creds;
-    const pct = Math.round(creds / 500 * 100);
-    document.getElementById('credits-fill').style.width = pct + '%';
-    document.getElementById('credits-fill').style.background = pct < 20 ? 'var(--red)' : pct < 50 ? 'var(--amber)' : 'var(--green)';
-
-    // Update badges
-    if (data.ev?.bets?.length)  document.getElementById('badge-ev').textContent  = data.ev.bets.length;
-    if (data.arb?.arbs?.length) document.getElementById('badge-arb').textContent = data.arb.arbs.length;
-    if (data.pm?.markets?.length) document.getElementById('badge-pm').textContent = data.pm.markets.length;
-    if (data.kalshi?.markets?.length) document.getElementById('badge-kal').textContent = data.kalshi.markets.length;
-    if (data.cross?.edges?.length) document.getElementById('badge-cross').textContent = data.cross.edges.length;
+  if(statusRes?.ok){
+    const s=await statusRes.json();
+    refreshInterval=s.refresh_interval||120;
+    const creds=s.odds?.credits_remaining??500;
+    document.getElementById('credits-val').textContent=creds;
+    const pct=Math.round(creds/500*100);
+    const fill=document.getElementById('credits-fill');
+    fill.style.width=pct+'%';
+    fill.style.background=pct<20?'var(--red)':pct<50?'var(--amber)':'var(--green)';
+    if(data.ev?.bets?.length)        document.getElementById('badge-ev').textContent=data.ev.bets.length;
+    if(data.arb?.arbs?.length)       document.getElementById('badge-arb').textContent=data.arb.arbs.length;
+    if(data.pm?.markets?.length)     document.getElementById('badge-pm').textContent=data.pm.markets.length;
+    if(data.kalshi?.markets?.length) document.getElementById('badge-kal').textContent=data.kalshi.markets.length;
+    if(data.cross?.edges?.length)    document.getElementById('badge-cross').textContent=data.cross.edges.length;
   }
-
   renderPage(currentPage);
 }
 
-// ── Countdown ──────────────────────────────────────────────────────────────
-function startCountdown() {
-  countdownVal = refreshInterval;
-  setInterval(() => {
+function startCountdown(){
+  countdownVal=refreshInterval;
+  setInterval(()=>{
     countdownVal--;
-    if (countdownVal <= 0) {
-      countdownVal = refreshInterval;
-      fetchAll();
-    }
-    const el = document.getElementById('countdown');
-    el.textContent = countdownVal;
-    el.style.color = countdownVal <= 10 ? 'var(--red)' : '#94a3b8';
-  }, 1000);
+    if(countdownVal<=0){countdownVal=refreshInterval;fetchAll();}
+    const el=document.getElementById('countdown');
+    el.textContent=countdownVal;
+    el.style.color=countdownVal<=10?'var(--red)':'var(--bright)';
+  },1000);
 }
 
-// ── Init ───────────────────────────────────────────────────────────────────
-(async () => {
+(async()=>{
   nav('best-odds');
   await fetchAll();
   startCountdown();
-  setInterval(fetchAll, 15000);
+  setInterval(fetchAll,15000);
 })();
 </script>
 </body>

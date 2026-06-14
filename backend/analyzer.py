@@ -3,16 +3,52 @@ from __future__ import annotations
 import re
 
 
+_STOPWORDS = {"the", "will", "win", "beat", "cover", "over", "under", "and", "for",
+              "city", "bay", "new", "los", "san", "las", "fort", "port", "east", "west"}
+
+_NICKNAMES: dict[str, list[str]] = {
+    "golden state warriors": ["warriors", "golden state", "gsw"],
+    "los angeles lakers":    ["lakers", "la lakers"],
+    "los angeles clippers":  ["clippers", "la clippers"],
+    "new york knicks":       ["knicks", "new york"],
+    "boston celtics":        ["celtics", "boston"],
+    "miami heat":            ["heat", "miami"],
+    "oklahoma city thunder": ["thunder", "okc"],
+    "minnesota timberwolves":["timberwolves", "wolves", "minnesota"],
+    "new york yankees":      ["yankees", "new york"],
+    "los angeles dodgers":   ["dodgers", "la dodgers"],
+    "kansas city chiefs":    ["chiefs", "kansas city", "kc chiefs"],
+    "philadelphia eagles":   ["eagles", "philadelphia", "philly"],
+    "san francisco 49ers":   ["49ers", "niners", "san francisco"],
+    "new england patriots":  ["patriots", "new england", "pats"],
+    "dallas cowboys":        ["cowboys", "dallas"],
+}
+
+
 def _normalize(text: str) -> str:
     return re.sub(r"[^a-z0-9 ]", "", text.lower()).strip()
 
 
 def _team_in(team: str, title: str) -> bool:
-    t = _normalize(team)
+    t  = _normalize(team)
     ti = _normalize(title)
-    # Try full name or last word (city vs nickname)
-    parts = t.split()
-    return any(p in ti for p in parts if len(p) > 3)
+
+    # Check nickname map first
+    for full, aliases in _NICKNAMES.items():
+        if t == _normalize(full) or t in [_normalize(a) for a in aliases]:
+            if any(_normalize(a) in ti for a in aliases):
+                return True
+
+    # Fallback: use significant words only (exclude stopwords and short words)
+    parts = [p for p in t.split() if len(p) > 4 and p not in _STOPWORDS]
+    if not parts:
+        # Short team name — require the full normalized name
+        return t in ti
+    # Require the team nickname (last meaningful word) OR 2+ parts matching
+    nickname = parts[-1]
+    if nickname in ti:
+        return True
+    return sum(1 for p in parts if p in ti) >= 2
 
 
 def find_cross_market_edges(odds_data: dict, kalshi: list[dict], polymarket: list[dict]) -> list[dict]:

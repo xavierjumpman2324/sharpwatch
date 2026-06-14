@@ -156,16 +156,21 @@ async def run_fetch(limit: int = 200, min_value: float = 100.0, top_n: int = 200
     for key, holders in ranked[:top_n]:
         title = market_label[key]
         cat   = categorize(title)
-        sides: dict[str, int] = defaultdict(int)
+        sides:       dict[str, int]   = defaultdict(int)
+        side_values: dict[str, float] = defaultdict(float)
         for h in holders:
-            sides[h["outcome"]] += 1
+            sides[h["outcome"]]       += 1
+            side_values[h["outcome"]] += h["value"]
+        total_val = sum(h["value"] for h in holders)
         markets.append({
             "title":         title,
             "category":      cat,
             "us_restricted": cat in US_RESTRICTED_CATS,
             "trader_count":  len(holders),
-            "total_value":   round(sum(h["value"] for h in holders), 2),
+            "total_value":   round(total_val, 2),
+            "avg_position":  round(total_val / len(holders), 2) if holders else 0,
             "sides":         dict(sorted(sides.items(), key=lambda x: -x[1])),
+            "side_values":   {k: round(v, 2) for k, v in sorted(side_values.items(), key=lambda x: -x[1])},
             "unanimous":     len(sides) == 1,
         })
 
